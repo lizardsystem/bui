@@ -30,33 +30,45 @@
         <div id="map"></div>
         <div id="slider"></div>
 
-        <script src="http://192.168.100.36:8080/target/target-script-min.js"></script>
         <script type="text/javascript" src="phonegap.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript" src="js/ui.js"></script>
         <script type="text/javascript" src="js/jquery/jquery.min.js"></script>
         <script type="text/javascript" src="js/bootstrap/bootstrap/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="js/lizard_neerslagradar.js"></script>
-          <script id="openlayers-script"
-            src="js/openlayers/OpenLayers.js"
-            data-openlayers-url="js/openlayers/"
-            charset="utf-8"></script>
+        <script src="js/openlayers/OpenLayers.js"></script>
         <script type="text/javascript" src="js/momentjs/moment.js"></script>
         
         <style>
             @media screen
             {
-                #map{width: 500px; height:250px; border: 2px solid black;}
+                #map { width: 100%; height:100%;}
             }
          </style>        
         <script type="text/javascript">
-            var map, baseLayer;
-            function init(){
-                map = new OpenLayers.Map('map');            
-                baseLayer = new OpenLayers.Layer.WMS("OpenLayers WMS", "http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=2013-10-16T09%3A15%3A00.000Z", {layers:"basic"});
-                map.addLayer(baseLayer);    
-                map.setCenter(new OpenLayers.LonLat(0,0),1);         
-            }
+             var map, layer;
+             function init () {
+                map = new OpenLayers.Map( 'map');
+                layer = new OpenLayers.Layer.OSM("Simple OSM Map");
+                /*map.addLayer(layer);*/
+
+                var dt_iso_8601 = layer.dt.format('YYYY-MM-DDTHH:mm:ss') + '.000Z';
+                var wms_params = {
+                    WIDTH: 525,
+                    HEIGHT: 497,
+                    SRS: 'EPSG:3857',
+                    BBOX: layer.bbox.toBBOX(),
+                    TIME: dt_iso_8601
+                };
+                var wms_url = 'http://regenradar.lizard.net/wms/' + '?' + $.param(wms_params);
+
+                
+                rain = new OpenLayers.Layer.WMS("Rain", "http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=2013-10-16T12%3A15%3A00.000Z", {layers: 'basic'} );
+                map.addLayer(rain);
+                map.setCenter(
+                    new OpenLayers.LonLat(5.5698782, 52.0992287).transform(
+                    new OpenLayers.Projection("EPSG:3857"),
+                    map.getProjectionObject()
+                    ), 8); 
+            };
             $(document).ready(function() {
                 init();
             });          
