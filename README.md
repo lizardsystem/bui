@@ -23,3 +23,8 @@ $ sudo npm install -g phonegap
 $ phonegap run ios
 $ phonegap run android
 ```
+
+ - Develop in www/index.html and www/js etc.
+ - When you want to test in XCode or Eclipse, run 'phonegap run ios/android' again.
+ - In platforms/ios/, there's a file HelloWorld.xcodeproj which you can open in XCode and build/test/debug.
+ - **Don't edit code in XCode** because it'll get overwritten.
