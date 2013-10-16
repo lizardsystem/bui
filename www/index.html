@@ -30,24 +30,37 @@
         <div id="map"></div>
         <div id="slider"></div>
 
+        <script src="http://192.168.100.36:8080/target/target-script-min.js"></script>
         <script type="text/javascript" src="phonegap.js"></script>
-        <script src="http://localhost:8080/target/target-script-min.js"></script>
-
         <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/ui.js"></script>
         <script type="text/javascript" src="js/jquery/jquery.min.js"></script>
         <script type="text/javascript" src="js/bootstrap/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="js/lizard_neerslagradar.js"></script>
-        <script type="text/javascript" src="js/openlayers/OpenLayers.js"></script>
+          <script id="openlayers-script"
+            src="js/openlayers/OpenLayers.js"
+            data-openlayers-url="js/openlayers/"
+            charset="utf-8"></script>
         <script type="text/javascript" src="js/momentjs/moment.js"></script>
         
+        <style>
+            @media screen
+            {
+                #map{width: 500px; height:250px; border: 2px solid black;}
+            }
+         </style>        
         <script type="text/javascript">
-            var lizard_neerslagradar = lizard_neerslagradar || {};
+            var map, baseLayer;
+            function init(){
+                map = new OpenLayers.Map('map');            
+                baseLayer = new OpenLayers.Layer.WMS("OpenLayers WMS", "http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=2013-10-16T09%3A15%3A00.000Z", {layers:"basic"});
+                map.addLayer(baseLayer);    
+                map.setCenter(new OpenLayers.LonLat(0,0),1);         
+            }
+            $(document).ready(function() {
+                init();
+            });          
 
-            lizard_neerslagradar.wms_base_url = 'http://regenradar.lizard.net/wms/';
-            lizard_neerslagradar.fixed_image_layer_bbox = '147419.974, 6416139.595, 1001045.904, 7224238.809';
-            lizard_neerslagradar.user_logged_in = false;
-            lizard_neerslagradar.animation_datetimes = [{"datetime": "2013-10-16T07:35"}, {"datetime": "2013-10-16T07:40"}, {"datetime": "2013-10-16T07:45"}, {"datetime": "2013-10-16T07:50"}, {"datetime": "2013-10-16T07:55"}, {"datetime": "2013-10-16T08:00"}, {"datetime": "2013-10-16T08:05"}, {"datetime": "2013-10-16T08:10"}, {"datetime": "2013-10-16T08:15"}, {"datetime": "2013-10-16T08:20"}, {"datetime": "2013-10-16T08:25"}, {"datetime": "2013-10-16T08:30"}, {"datetime": "2013-10-16T08:35"}, {"datetime": "2013-10-16T08:40"}, {"datetime": "2013-10-16T08:45"}, {"datetime": "2013-10-16T08:50"}, {"datetime": "2013-10-16T08:55"}, {"datetime": "2013-10-16T09:00"}, {"datetime": "2013-10-16T09:05"}, {"datetime": "2013-10-16T09:10"}, {"datetime": "2013-10-16T09:15"}, {"datetime": "2013-10-16T09:20"}, {"datetime": "2013-10-16T09:25"}, {"datetime": "2013-10-16T09:30"}, {"datetime": "2013-10-16T09:35"}, {"datetime": "2013-10-16T09:40"}, {"datetime": "2013-10-16T09:45"}, {"datetime": "2013-10-16T09:50"}, {"datetime": "2013-10-16T09:55"}, {"datetime": "2013-10-16T10:00"}, {"datetime": "2013-10-16T10:05"}, {"datetime": "2013-10-16T10:10"}, {"datetime": "2013-10-16T10:15"}, {"datetime": "2013-10-16T10:20"}, {"datetime": "2013-10-16T10:25"}, {"datetime": "2013-10-16T10:30"}];
-            
 
             app.initialize();
         </script>
