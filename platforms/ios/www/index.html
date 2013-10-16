@@ -22,20 +22,31 @@
         <meta charset="utf-8" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Hello World</title>
+        <link rel="stylesheet" type="text/css" href="js/bootstrap/bootstrap/css/bootstrap.min.css" />
+        <title>Regenradar</title>
     </head>
     <body>
-        <div class="app">
-            <h1>Lizard</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">REGENRADAR</p>
-                <p class="event received">...is Ready</p>
-            </div>
-        </div>
+        <h1>Bui</h1>
+        <div id="map"></div>
+        <div id="slider"></div>
+
         <script type="text/javascript" src="phonegap.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/jquery/jquery.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/lizard_neerslagradar.js"></script>
+        <script type="text/javascript" src="js/openlayers/OpenLayers.js"></script>
+        <script type="text/javascript" src="js/momentjs/moment.js"></script>
+        
         <script type="text/javascript">
+            var lizard_neerslagradar = lizard_neerslagradar || {};
+
+            lizard_neerslagradar.wms_base_url = 'http://regenradar.lizard.net/wms/';
+            lizard_neerslagradar.fixed_image_layer_bbox = '147419.974, 6416139.595, 1001045.904, 7224238.809';
+            lizard_neerslagradar.user_logged_in = false;
+            lizard_neerslagradar.animation_datetimes = [{"datetime": "2013-10-16T07:35"}, {"datetime": "2013-10-16T07:40"}, {"datetime": "2013-10-16T07:45"}, {"datetime": "2013-10-16T07:50"}, {"datetime": "2013-10-16T07:55"}, {"datetime": "2013-10-16T08:00"}, {"datetime": "2013-10-16T08:05"}, {"datetime": "2013-10-16T08:10"}, {"datetime": "2013-10-16T08:15"}, {"datetime": "2013-10-16T08:20"}, {"datetime": "2013-10-16T08:25"}, {"datetime": "2013-10-16T08:30"}, {"datetime": "2013-10-16T08:35"}, {"datetime": "2013-10-16T08:40"}, {"datetime": "2013-10-16T08:45"}, {"datetime": "2013-10-16T08:50"}, {"datetime": "2013-10-16T08:55"}, {"datetime": "2013-10-16T09:00"}, {"datetime": "2013-10-16T09:05"}, {"datetime": "2013-10-16T09:10"}, {"datetime": "2013-10-16T09:15"}, {"datetime": "2013-10-16T09:20"}, {"datetime": "2013-10-16T09:25"}, {"datetime": "2013-10-16T09:30"}, {"datetime": "2013-10-16T09:35"}, {"datetime": "2013-10-16T09:40"}, {"datetime": "2013-10-16T09:45"}, {"datetime": "2013-10-16T09:50"}, {"datetime": "2013-10-16T09:55"}, {"datetime": "2013-10-16T10:00"}, {"datetime": "2013-10-16T10:05"}, {"datetime": "2013-10-16T10:10"}, {"datetime": "2013-10-16T10:15"}, {"datetime": "2013-10-16T10:20"}, {"datetime": "2013-10-16T10:25"}, {"datetime": "2013-10-16T10:30"}];
+            
+
             app.initialize();
         </script>
     </body>
