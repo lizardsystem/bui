@@ -52,6 +52,46 @@
             }
          </style>        
         <script type="text/javascript">
+
+            // onSuccess Callback
+            // This method accepts a Position object, which contains the
+            // current GPS coordinates
+            //
+            var onSuccess = function(position) {
+               map.setCenter(
+                    new OpenLayers.LonLat(position.coords.longitude, position.coords.latitude).transform(
+                        new OpenLayers.Projection("EPSG:4326"),
+                        map.getProjectionObject()
+                    ),
+                11);
+                map.setCenter(position, zoom);
+
+                // alert('Latitude: '          + position.coords.latitude          + '\n' +
+                //       'Longitude: '         + position.coords.longitude         + '\n' +
+                //       'Altitude: '          + position.coords.altitude          + '\n' +
+                //       'Accuracy: '          + position.coords.accuracy          + '\n' +
+                //       'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
+                //       'Heading: '           + position.coords.heading           + '\n' +
+                //       'Speed: '             + position.coords.speed             + '\n' +
+                //       'Timestamp: '         + position.timestamp                + '\n');
+            };
+
+            // onError Callback receives a PositionError object
+            //
+            function onError(error) {
+                // alert('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
+                map.setCenter(
+                    new OpenLayers.LonLat(5.5698782, 52.0992287).transform(
+                        new OpenLayers.Projection("EPSG:4326"),
+                        map.getProjectionObject()
+                    ),
+                8);
+                return true; // fail silently...
+            }
+
+            navigator.geolocation.getCurrentPosition(onSuccess, onError);
+
+
             (function () {
                 var map = null;
                 var lizard_neerslagradar = lizard_neerslagradar || {};
@@ -425,12 +465,12 @@
                     window.map = map;
                     map.addLayer(layer = new OpenLayers.Layer.Stamen("toner"));
                     //map.zoomToMaxExtent();
-                    map.setCenter(
-                        new OpenLayers.LonLat(5.5698782, 52.0992287).transform(
-                            new OpenLayers.Projection("EPSG:4326"),
-                            map.getProjectionObject()
-                        ),
-                    8);
+                    // map.setCenter(
+                    //     new OpenLayers.LonLat(5.5698782, 52.0992287).transform(
+                    //         new OpenLayers.Projection("EPSG:4326"),
+                    //         map.getProjectionObject()
+                    //     ),
+                    // 8);
                 }
 
                 function init_neerslagradar () {
