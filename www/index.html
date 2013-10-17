@@ -64,7 +64,7 @@
                 now.minutes((Math.round(now.minutes()/5) * 5) % 60);
                 now.seconds(0);
                 console.debug("rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
-                for (var interval=5; interval < 360; interval=interval+5) {
+                for (var interval=5; interval < 180; interval=interval+5) {
                     var animationDatetime =  now.subtract('minutes', 5);
                     console.debug(interval, animationDatetime.format('YYYY-MM-DDTHH:mm:ss'));
                     var UtsieAniDatetime = moment.utc(animationDatetime);
