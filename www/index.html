@@ -24,6 +24,7 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="js/bootstrap/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="js/openlayers/theme/default/style.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
         <title>Regenradar</title>
     </head>
     <body>
@@ -462,8 +463,7 @@
 
                 function init_map () {
                     map = new OpenLayers.Map('map', {
-                        theme: null,
-                        controls: []
+                        theme: null
                     });
                     window.map = map;
                     map.addLayer(layer = new OpenLayers.Layer.Stamen("toner"));
