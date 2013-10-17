@@ -58,6 +58,23 @@
                 lizard_neerslagradar.fixed_image_layer_bbox = '147419.974, 6416139.595, 1001045.904, 7224238.809';
                 lizard_neerslagradar.user_logged_in = false;
                 // Debug info: number of hours is 3
+                var animationDatetimes = [];
+                var now = moment();
+                console.debug("nu = ", now.format('YYYY-MM-DDTHH:mm:ss'));
+                now.minutes((Math.round(now.minutes()/5) * 5) % 60);
+                now.seconds(0);
+                console.debug("rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
+                for (var interval=5; interval < 360; interval=interval+5) {
+                    var animationDatetime =  now.subtract('minutes', 5);
+                    console.debug(interval, animationDatetime.format('YYYY-MM-DDTHH:mm:ss'));
+                    var UtsieAniDatetime = moment.utc(animationDatetime);
+                    animationDatetimes.push(UtsieAniDatetime.format('YYYY-MM-DDTHH:mm:ss') + '.000Z');
+                };
+                animationDatetimes.reverse();
+                console.debug(animationDatetimes);
+                console.debug(UtsieAniDatetime);
+                console.debug(animationDatetime);
+
                 lizard_neerslagradar.animation_datetimes = [{"datetime": "2013-10-17T07:10"}, {"datetime": "2013-10-17T07:15"}, {"datetime": "2013-10-17T07:20"}, {"datetime": "2013-10-17T07:25"}, {"datetime": "2013-10-17T07:30"}, {"datetime": "2013-10-17T07:35"}, {"datetime": "2013-10-17T07:40"}, {"datetime": "2013-10-17T07:45"}, {"datetime": "2013-10-17T07:50"}, {"datetime": "2013-10-17T07:55"}, {"datetime": "2013-10-17T08:00"}, {"datetime": "2013-10-17T08:05"}, {"datetime": "2013-10-17T08:10"}, {"datetime": "2013-10-17T08:15"}, {"datetime": "2013-10-17T08:20"}, {"datetime": "2013-10-17T08:25"}, {"datetime": "2013-10-17T08:30"}, {"datetime": "2013-10-17T08:35"}, {"datetime": "2013-10-17T08:40"}, {"datetime": "2013-10-17T08:45"}, {"datetime": "2013-10-17T08:50"}, {"datetime": "2013-10-17T08:55"}, {"datetime": "2013-10-17T09:00"}, {"datetime": "2013-10-17T09:05"}, {"datetime": "2013-10-17T09:10"}, {"datetime": "2013-10-17T09:15"}, {"datetime": "2013-10-17T09:20"}, {"datetime": "2013-10-17T09:25"}, {"datetime": "2013-10-17T09:30"}, {"datetime": "2013-10-17T09:35"}, {"datetime": "2013-10-17T09:40"}, {"datetime": "2013-10-17T09:45"}, {"datetime": "2013-10-17T09:50"}, {"datetime": "2013-10-17T09:55"}, {"datetime": "2013-10-17T10:00"}];
 
                 function MyLayer (dt, opacity, bbox) {
@@ -165,15 +182,9 @@
                         lizard_neerslagradar.region_bbox.split(','));
                 }
 
-                for (var i=0; i < lizard_neerslagradar.animation_datetimes.length; i++) {
-                    var dt = moment.utc(lizard_neerslagradar.animation_datetimes[i].datetime);
-
-                    if (lizard_neerslagradar.user_logged_in) {
-                        layers.push(new MyLayer(dt, 0.2, full_bbox));
-                        regional_layers.push(new MyLayer(dt, 0.6, regional_bbox));
-                    } else {
-                        layers.push(new MyLayer(dt, 0.6, full_bbox));
-                    }
+                for (var i=0; i < animationDatetimes.length; i++) {
+                    var dt = animationDatetimes[i];
+                    layers.push(new MyLayer(dt, 0.6, full_bbox));
                 }
 
                 var layers_loading = 0;
@@ -230,7 +241,7 @@
 
                 function init_cycle_layers () {
                     var init_layer = function (idx, layer) {
-                        var dt_iso_8601 = layer.dt.format('YYYY-MM-DDTHH:mm:ss') + '.000Z';
+                        var dt_iso_8601 = layer.dt;
                         var wms_params = {
                             WIDTH: 525,
                             HEIGHT: 497,
