@@ -52,6 +52,13 @@
                 lizard_neerslagradar.fixed_image_layer_bbox = '147419.974, 6416139.595, 1001045.904, 7224238.809';
                 lizard_neerslagradar.user_logged_in = false;
                 // Debug info: number of hours is 3
+                var animation_datetimes = [];
+                for (var interval=0; interval < 180; interval=interval+5) {
+                    
+                    console.debug("Yeeehaa");
+                    animation_datetimes.push(moment().subtract('minutes', interval));
+                };
+
                 lizard_neerslagradar.animation_datetimes = [{"datetime": "2013-10-17T07:10"}, {"datetime": "2013-10-17T07:15"}, {"datetime": "2013-10-17T07:20"}, {"datetime": "2013-10-17T07:25"}, {"datetime": "2013-10-17T07:30"}, {"datetime": "2013-10-17T07:35"}, {"datetime": "2013-10-17T07:40"}, {"datetime": "2013-10-17T07:45"}, {"datetime": "2013-10-17T07:50"}, {"datetime": "2013-10-17T07:55"}, {"datetime": "2013-10-17T08:00"}, {"datetime": "2013-10-17T08:05"}, {"datetime": "2013-10-17T08:10"}, {"datetime": "2013-10-17T08:15"}, {"datetime": "2013-10-17T08:20"}, {"datetime": "2013-10-17T08:25"}, {"datetime": "2013-10-17T08:30"}, {"datetime": "2013-10-17T08:35"}, {"datetime": "2013-10-17T08:40"}, {"datetime": "2013-10-17T08:45"}, {"datetime": "2013-10-17T08:50"}, {"datetime": "2013-10-17T08:55"}, {"datetime": "2013-10-17T09:00"}, {"datetime": "2013-10-17T09:05"}, {"datetime": "2013-10-17T09:10"}, {"datetime": "2013-10-17T09:15"}, {"datetime": "2013-10-17T09:20"}, {"datetime": "2013-10-17T09:25"}, {"datetime": "2013-10-17T09:30"}, {"datetime": "2013-10-17T09:35"}, {"datetime": "2013-10-17T09:40"}, {"datetime": "2013-10-17T09:45"}, {"datetime": "2013-10-17T09:50"}, {"datetime": "2013-10-17T09:55"}, {"datetime": "2013-10-17T10:00"}];
 
                 function MyLayer (dt, opacity, bbox) {
