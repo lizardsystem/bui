@@ -28,11 +28,16 @@
     </head>
     <body>
         <div id="map"></div>
-        <div id="slider"></div>
+        <div id="slider" style="bottom: 0px;position: absolute;width:100%;height: 200px;background-color:#ccc;opacity:.8;z-index: 99999;">
+            
+            <div id="slideValue" style="color:white;line-height:2em;font-size:5em;">0.000000</div>
+        </div>
 
         <!--<script type="text/javascript" src="phonegap.js"></script>-->
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript" src="js/jquery/jquery.min.js"></script>
+        <!-- <script type="text/javascript" src="js/hammer/hammer.js"></script> -->
+        <script type="text/javascript" src="js/hammer/jquery.hammer.js"></script>
         <script type="text/javascript" src="js/bootstrap/bootstrap/js/bootstrap.min.js"></script>
         <script src="js/openlayers/OpenLayers.js"></script>
         <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script>
@@ -434,6 +439,26 @@
                     //init_progress();
                     init_cycle_layers();
                     wait_until_first_layer_loaded();
+
+
+                    var hammertime = $("#slider").hammer();
+
+                    hammertime.on("dragleft", function(ev) {
+                        // console.log('you dragged left!', ev);
+                        ev.gesture.preventDefault();
+                        console.log(ev.gesture.touches[0].pageX)
+                        $('#slideValue').html(ev.gesture.touches[0].pageX);
+                        ev.stopPropagation();
+                    });
+
+                    hammertime.on("dragright", function(ev) {
+                        // console.log('you dragged right!', ev);
+                        ev.gesture.preventDefault();
+                        console.log(ev.gesture.touches[0].pageX)
+                        $('#slideValue').html(ev.gesture.touches[0].pageX);
+                        ev.stopPropagation();
+                    });
+
                 }
 
                 $(document).ready(init_neerslagradar);
