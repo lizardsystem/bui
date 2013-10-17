@@ -27,7 +27,6 @@
         <title>Regenradar</title>
     </head>
     <body>
-        <h1>Bui</h1>
         <div id="map"></div>
         <div id="slider"></div>
 
@@ -406,7 +405,8 @@
 
                 function init_map () {
                     map = new OpenLayers.Map('map', {
-                        theme: null
+                        theme: null,
+                        controls: []
                     });
                     window.map = map;
                     map.addLayer(layer = new OpenLayers.Layer.Stamen("toner"));
