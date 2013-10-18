@@ -454,8 +454,24 @@
                         theme: null
                     });
                     window.map = map;
-                    map.addLayer(layer = new OpenLayers.Layer.Stamen("toner"));
-                    map.zoomToMaxExtent();
+                    
+                    var grey = new OpenLayers.Layer.XYZ(
+                    "Dark Grey",
+                    [
+                        "http://a.tiles.mapbox.com/v3/examples.map-cnkhv76j/${z}/${x}/${y}.png",
+                        "http://b.tiles.mapbox.com/v3/examples.map-cnkhv76j/${z}/${x}/${y}.png",
+                        "http://c.tiles.mapbox.com/v3/examples.map-cnkhv76j/${z}/${x}/${y}.png",
+                        "http://d.tiles.mapbox.com/v3/examples.map-cnkhv76j/${z}/${x}/${y}.png"
+                    ], {
+                        attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
+                        sphericalMercator: true,
+                        wrapDateLine: true,
+                        //numZoomLevels: 5
+                    }
+                    );
+
+                    map.addLayer(grey);
+                    //map.zoomToMaxExtent();
                     map.setCenter(
                         new OpenLayers.LonLat(5.5698782, 52.0992287).transform(
                             new OpenLayers.Projection("EPSG:4326"),
