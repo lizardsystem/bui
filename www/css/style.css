@@ -2,3 +2,19 @@
 .olControlZoom {
     display: none;
 }
+
+.stretch-bar {
+	width: 2000px !important; 
+	right: 0px;
+	position: absolute;
+	top: 0px;
+	z-index: -10;
+}
+
+ #magnifier {
+ 	z-index: 99999;
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+ }

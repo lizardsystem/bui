@@ -29,8 +29,11 @@
         <title>Regenradar</title>
     </head>
     <body>
-        <div id="magnifier" style="z-index: 99999; border: 1px solid red;" class="dragdealer rounded-cornered">
-            <div class="red-bar handle">drag me</div>
+        <div id="magnifier" class="dragdealer rounded-cornered">
+            <div class="red-bar handle">
+                <div id="clock" class="red-bar" style="z-index: 9999999;"></div>
+                <div id="stretch-bar" class="red-bar stretch-bar"></div>
+            </div>
         </div>
         <div id="map"></div>
         
@@ -264,6 +267,8 @@
                         }
                         else {
                             set_layer(next_layer_idx);
+                            slider.setValue(next_layer_idx/(layers.length-1));
+                            //console.log(current_layer_idx/layers.length);
                         }
                     }
                 }
@@ -312,23 +317,18 @@
                 }
 
                 function init_slider () {
-                    $slider = $('#timeslider');
-                    $slider.slider({
-                        min: 0,
-                        max: layers.length - 1,
-                        change: function (event, ui) {
-                            var layer = layers[ui.value];
-                            $("#currentdt").html(layer.dt.format('HH:mm'));
-                        },
-                        slide: function (event, ui) {
-                            stop_if_running();
-                            set_layer(ui.value);
-                            // hack: force triggering a change event while sliding
-                            var slider_data = $slider.data('slider');
-                            slider_data._trigger('change', event, ui);
+                    window.slider = new Dragdealer('magnifier',
+                    {
+                        steps: layers.length-1,
+                        snap: false,
+                        speed: 20,
+                        animationCallback: function(x, y)
+                        {
+                            clock.innerHTML = current_layer_idx;
                         }
                     });
-                }
+                };
+                    var clock = document.getElementById('clock');
 
                 function start_if_first_load () {
                     if (is_first_load) {
@@ -484,20 +484,11 @@
                     init_map();
                     //init_overview();
                     init_button();
-                    //init_slider();
+                    init_slider();
                     //init_progress();
                     init_cycle_layers();
                     wait_until_first_layer_loaded();
 
-                    new Dragdealer('magnifier',
-                        {
-                            steps: 6,
-                            snap: true,
-                            animationCallback: function(x, y)
-                            {
-                                return true;
-                            }
-                        });
 
                 }
 
