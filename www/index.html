@@ -24,7 +24,7 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="js/bootstrap/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="js/openlayers/theme/default/style.css">
-        <link rel="stylesheet" type="text/css" href="https://raw.github.com/timsnadden/dragdealer/master/dragdealer.css">
+        <link rel="stylesheet" type="text/css" href="js/dragdealer/dragdealer.css">
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <title>Regenradar</title>
     </head>
@@ -37,13 +37,11 @@
         <!--<script type="text/javascript" src="phonegap.js"></script>-->
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript" src="js/jquery/jquery.min.js"></script>
-        <!-- <script type="text/javascript" src="js/hammer/hammer.js"></script> -->
-        <script type="text/javascript" src="js/hammer/jquery.hammer.js"></script>
         <script type="text/javascript" src="js/bootstrap/bootstrap/js/bootstrap.min.js"></script>
         <script src="js/openlayers/OpenLayers.js"></script>
         <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script>
         <script type="text/javascript" src="js/momentjs/moment.js"></script>
-        <script type="text/javascript" src="https://raw.github.com/timsnadden/dragdealer/master/dragdealer.js"></script>
+        <script type="text/javascript" src="js/dragdealer/dragdealer.js"></script>
         
         <style>
             @media screen
@@ -58,34 +56,27 @@
             // current GPS coordinates
             //
             var onSuccess = function(position) {
-               map.setCenter(
+                map.setCenter(
                     new OpenLayers.LonLat(position.coords.longitude, position.coords.latitude).transform(
                         new OpenLayers.Projection("EPSG:4326"),
                         map.getProjectionObject()
                     ),
                 11);
-                map.setCenter(position, zoom);
-
-                // alert('Latitude: '          + position.coords.latitude          + '\n' +
-                //       'Longitude: '         + position.coords.longitude         + '\n' +
-                //       'Altitude: '          + position.coords.altitude          + '\n' +
-                //       'Accuracy: '          + position.coords.accuracy          + '\n' +
-                //       'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-                //       'Heading: '           + position.coords.heading           + '\n' +
-                //       'Speed: '             + position.coords.speed             + '\n' +
-                //       'Timestamp: '         + position.timestamp                + '\n');
+                
+                alert('Latitude: '          + position.coords.latitude          + '\n' +
+                      'Longitude: '         + position.coords.longitude         + '\n' +
+                      'Altitude: '          + position.coords.altitude          + '\n' +
+                      'Accuracy: '          + position.coords.accuracy          + '\n' +
+                      'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
+                      'Heading: '           + position.coords.heading           + '\n' +
+                      'Speed: '             + position.coords.speed             + '\n' +
+                      'Timestamp: '         + position.timestamp                + '\n');
             };
 
             // onError Callback receives a PositionError object
             //
             function onError(error) {
-                // alert('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
-                map.setCenter(
-                    new OpenLayers.LonLat(5.5698782, 52.0992287).transform(
-                        new OpenLayers.Projection("EPSG:4326"),
-                        map.getProjectionObject()
-                    ),
-                8);
+                alert('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
                 return true; // fail silently...
             }
 
@@ -464,13 +455,13 @@
                     });
                     window.map = map;
                     map.addLayer(layer = new OpenLayers.Layer.Stamen("toner"));
-                    //map.zoomToMaxExtent();
-                    // map.setCenter(
-                    //     new OpenLayers.LonLat(5.5698782, 52.0992287).transform(
-                    //         new OpenLayers.Projection("EPSG:4326"),
-                    //         map.getProjectionObject()
-                    //     ),
-                    // 8);
+                    map.zoomToMaxExtent();
+                    map.setCenter(
+                        new OpenLayers.LonLat(5.5698782, 52.0992287).transform(
+                            new OpenLayers.Projection("EPSG:4326"),
+                            map.getProjectionObject()
+                        ),
+                    8);
                 }
 
                 function init_neerslagradar () {
@@ -491,29 +482,6 @@
                                 return true;
                             }
                         });
-
-                    var hammertime = $("#slider").hammer();
-
-                    hammertime.on("dragleft", function(ev) {
-                        ev.gesture.preventDefault();
-                        console.log(ev.gesture.touches[0].pageX);
-
-                        var percentage = (ev.gesture.touches[0].pageX / $(window).width()) * 100;
-                        $('#slideValue').html(Math.round(percentage) + '%');
-                        $('#slideBar').css('width', ev.gesture.touches[0].pageX+'px');
-                        ev.stopPropagation();
-                    });
-
-                    hammertime.on("dragright", function(ev) {
-                        ev.gesture.preventDefault();
-                        console.log(ev.gesture.touches[0].pageX);
-                        
-                        var percentage = (ev.gesture.touches[0].pageX / $(window).width()) * 100;
-                        $('#slideValue').html(Math.round(percentage) + '%');
-                        $('#slideBar').css('width', ev.gesture.touches[0].pageX+'px');
-                        
-                        ev.stopPropagation();
-                    });
 
                 }
 
