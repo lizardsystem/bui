@@ -3,18 +3,24 @@
     display: none;
 }
 
-.stretch-bar {
-	width: 2000px !important; 
-	right: 0px;
+#slider {
 	position: absolute;
-	top: 0px;
-	z-index: -10;
+	left: 0px;
+	right: 0px;
+	height: 20%; 
+	border-radius: 5px;
+	background-color: grey;
+	opacity: 0.5;
+	z-index: 99999;
+	bottom: 0px;
+	margin: 2%;
 }
 
- #magnifier {
- 	z-index: 99999;
+.chart {
 	position: absolute;
-	bottom: 0px;
-	left: 0px;
-	width: 100%;
- }
+	top: 0px;
+	margin: 2%;
+	z-index: 9999;
+
+
+}
