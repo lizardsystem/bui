@@ -306,20 +306,35 @@
                     hammertime.on("dragend", function(ev) {
                         ev.gesture.preventDefault();
 
-                        var deltaLayers = Math.round(ev.gesture.deltaX / 10);
+                        var deltaLayers = Math.round(ev.gesture.deltaX / 20);
 
-                        if (ev.gesture.direction === "right") {
                         // figure out next layer
-                            var next_layer_idx = (current_layer_idx >= layers.length - deltaLayers) ? 0 : current_layer_idx + deltaLayers;
-                            if (next_layer_idx === 0) {
-                                console.debug(next_layer_idx, layers[next_layer_idx]);
-                                set_layer(next_layer_idx);
-                            }
-                            else {
-                                console.debug(next_layer_idx, layers[next_layer_idx]);
-                                set_layer(next_layer_idx);
-                            }
+                        var pot_layer_idx = current_layer_idx + deltaLayers;
+                        if (pot_layer_idx > layers.length && pot_layer_idx >= 0) {
+                            var next_layer_idx = pot_layer_idx - layers.length;
+                            console.debug("Start over: ", next_layer_idx);
                         }
+                        else if (pot_layer_idx < layers.length && pot_layer_idx >= 0) {
+                            var next_layer_idx = current_layer_idx + deltaLayers;
+                            console.debug("Continue: ", next_layer_idx);
+                        }
+                        else if (pot_layer_idx < 0) {
+                            var next_layer_idx = layers.length + pot_layer_idx;
+                            console.debug("Start at end: ", next_layer_idx);
+                        }
+                        else {
+                            return true;
+                        }                  
+
+                        if (next_layer_idx === 0) {
+                            console.debug(next_layer_idx, layers[next_layer_idx]);
+                            set_layer(next_layer_idx);
+                        }
+                        else {
+                            console.debug(next_layer_idx, layers[next_layer_idx]);
+                            set_layer(next_layer_idx);
+                        }
+
                         
                         ev.stopPropagation();
                     });
