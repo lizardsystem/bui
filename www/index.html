@@ -144,7 +144,7 @@
                     }
                 });
 
-                var interval_ms = 500;
+                var interval_ms = 250;
                 var cycle_layers_interval = null;
                 var current_layer_idx = -1;
                 var paused_at_end = false;
@@ -243,7 +243,7 @@
                 }
 
                 function init_slider () {
-
+                    var has_hold = false;
                     var slideLayerBackwards = function () {
                         if (current_layer_idx === 0) {
                             set_layer(layers.length - 1);
@@ -289,7 +289,19 @@
                     });
 
                     hammertime.on("hold", function (ev) {
-                        navigator.geolocation.getCurrentPosition(onSuccess, onError);
+                        if (has_hold) {
+                            map.setCenter(
+                                new OpenLayers.LonLat(5.5698782, 52.0992287).transform(
+                                new OpenLayers.Projection("EPSG:4326"),
+                            map.getProjectionObject()
+                            ),
+                            7);
+                            has_hold = false;
+                        }
+                        else if (!has_hold) {
+                            navigator.geolocation.getCurrentPosition(onSuccess, onError);
+                            has_hold = true;
+                        }
                     })
                 };
 
