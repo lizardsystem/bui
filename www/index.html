@@ -85,9 +85,8 @@
 
             (function () {
                 var map = null;
-                var lizard_neerslagradar = lizard_neerslagradar || {};
-                lizard_neerslagradar.wms_base_url = 'http://regenradar.lizard.net/wms/';
-                lizard_neerslagradar.fixed_image_layer_bbox = '147419.974, 6416139.595, 1001045.904, 7224238.809';
+                wms_base_url = 'http://regenradar.lizard.net/wms/';
+                fixed_image_layer_bbox = '147419.974, 6416139.595, 1001045.904, 7224238.809';
                 // Debug info: number of hours is 3
                 var animationDatetimes = [];
                 var now = moment();
@@ -193,7 +192,7 @@
                     }
                 });
 
-                var interval_ms = 100;
+                var interval_ms = 200;
                 var cycle_layers_interval = null;
                 var current_layer_idx = -1;
                 var paused_at_end = false;
@@ -203,13 +202,7 @@
                 var regional_layers = [];
 
                 var full_bbox = new OpenLayers.Bounds(
-                    lizard_neerslagradar.fixed_image_layer_bbox.split(','));
-
-                var regional_bbox;
-                if (lizard_neerslagradar.user_logged_in) {
-                    regional_bbox = new OpenLayers.Bounds(
-                        lizard_neerslagradar.region_bbox.split(','));
-                }
+                    fixed_image_layer_bbox.split(','));
 
                 for (var i=0; i < animationDatetimes.length; i++) {
                     var dt = animationDatetimes[i];
@@ -242,13 +235,12 @@
                     var current_layer = layers[current_layer_idx];
                     // don't swap layers when we're still loading
                     if ((!current_layer || !current_layer.ol_layer.loading) &&
-                        (!paused_at_end) &&
-                        (!lizard_neerslagradar.user_logged_in ||
-                         !regional_layer ||
-                         !regional_layer.ol_layer.loading)) {
+                        (!paused_at_end)) {
                         // figure out next layer
                         var next_layer_idx = (current_layer_idx >= layers.length - 1) ? 0 : current_layer_idx + 1;
                         if (next_layer_idx === 0) {
+                            paused_at_end = true;
+                            setTimeout(function () { paused_at_end = false; set_layer(0); }, 1000);
                             set_layer(next_layer_idx);
                         }
                         else {
@@ -267,7 +259,7 @@
                             BBOX: layer.bbox.toBBOX(),
                             TIME: dt_iso_8601
                         };
-                        var wms_url = lizard_neerslagradar.wms_base_url + '?' + $.param(wms_params);
+                        var wms_url = wms_base_url + '?' + $.param(wms_params);
                         var ol_layer = new CssHideableImageLayer(
                             'L' + idx,
                             wms_url,
@@ -447,7 +439,7 @@
                             clearInterval(wait_interval);
                         }
                     };
-                    wait_interval = setInterval(tick, 100);
+                    wait_interval = setInterval(tick, 200);
                 }
 
                 function init_map () {

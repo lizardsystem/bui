@@ -3,6 +3,15 @@
     display: none;
 }
 
+.olTileImage {
+    image-rendering:optimizeSpeed; /* Legal fallback */
+    image-rendering:-moz-crisp-edges; /* Firefox */
+    image-rendering:-o-crisp-edges; /* Opera */
+    image-rendering:-webkit-optimize-contrast; /* Chrome (and eventually Safari) */
+    image-rendering:crisp-edges; /* CSS3 Proposed */
+    -ms-interpolation-mode:bicubic; /* IE8+ */
+}
+
 #slider {
 	position: absolute;
 	left: 0px;
@@ -21,6 +30,5 @@
 	top: 0px;
 	margin: 2%;
 	z-index: 9999;
-
 
 }
