@@ -85,7 +85,7 @@
                 var animationDatetimes = [];
                 var now = moment();
                 console.debug("Now = ", now.format('YYYY-MM-DDTHH:mm:ss'));
-                // The wms only accepts rewuests for every 5th round minute
+                // The wms only accepts requests for every 5th minute exact
                 now.minutes((Math.round(now.minutes()/5) * 5) % 60);
                 now.seconds(0);
                 console.debug("Now rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
@@ -173,12 +173,12 @@
                         if (layer_idx != -1) {
                             var layer = layers[layer_idx];
                             layer.ol_layer.setCssVisibility(true);
+                            changeClock(layer);
                             //console.debug("Switch to layer: ", layer)
                         }
 
                         // update with next layer index
                         current_layer_idx = layer_idx;
-                        changeClock(current_layer);
                     }
                 }
 
@@ -191,6 +191,7 @@
                         var next_layer_idx = (current_layer_idx >= layers.length - 1) ? 0 : current_layer_idx + 1;
                         if (next_layer_idx === 0) {
                             paused_at_end = true;
+
                             setTimeout(function () { paused_at_end = false; set_layer(0); }, 1000);
                             set_layer(next_layer_idx);
                         }
@@ -243,33 +244,17 @@
 
                 function init_slider () {
 
-                    var slideLayer = function (deltaLayers) {
-                        // figure out next layer
-                        var pot_layer_idx = current_layer_idx + deltaLayers;
-                        if (pot_layer_idx > layers.length && pot_layer_idx >= 0) {
-                            var next_layer_idx = pot_layer_idx - layers.length;
-                            console.debug("Start over: ", next_layer_idx);
-                        }
-                        else if (pot_layer_idx < layers.length && pot_layer_idx >= 0) {
-                            var next_layer_idx = current_layer_idx + deltaLayers;
-                            console.debug("Continue: ", next_layer_idx);
-                        }
-                        else if (pot_layer_idx < 0) {
-                            var next_layer_idx = layers.length + pot_layer_idx;
-                            console.debug("Start at end: ", next_layer_idx);
+                    var slideLayerBackwards = function () {
+                        if (current_layer_idx === 0) {
+                            set_layer(layers.length - 1);
+                            console.debug("Going to the end: ", current_layer_idx);
                         }
                         else {
-                            return true;
-                        }                  
-                        if (next_layer_idx === 0) {
-                            console.debug(next_layer_idx, layers[next_layer_idx]);
-                            set_layer(next_layer_idx);
+                            console.debug("Going one down: ", current_layer_idx);
+                            set_layer(current_layer_idx - 1);
+
                         }
-                        else {
-                            console.debug(next_layer_idx, layers[next_layer_idx]);
-                            set_layer(next_layer_idx);
-                        }    
-                    };
+                    }
 
                     var hammertime = $("#slider").hammer();
                     var previous_drag = 0;
@@ -278,11 +263,11 @@
                         console.debug(ev.gesture.deltaX);
                         // Check direction and move every fifth pixel
                         if (ev.gesture.deltaX > (previous_drag+5)) {
-                            slideLayer(1);
+                            cycle_layers();
                             previous_drag = ev.gesture.deltaX;
                         }
                         if (ev.gesture.deltaX < (previous_drag-5)) {
-                            slideLayer(-1);
+                            slideLayerBackwards();
                             previous_drag = ev.gesture.deltaX;
                         }
                         ev.stopPropagation();
@@ -419,11 +404,6 @@
                 render = function(data) {
                     var hourArc, minuteArc;
                     clockGroup.selectAll(".clockhand").remove();
-                    /*secondArc = d3.svg.arc().innerRadius(0).outerRadius(70).startAngle(function(d) {
-                      return scaleSecs(d.numeric);
-                    }).endAngle(function(d) {
-                      return scaleSecs(d.numeric);
-                    });*/
                     minuteArc = d3.svg.arc().innerRadius(0).outerRadius(70).startAngle(function(d) {
                       return scaleMins(d.numeric);
                     }).endAngle(function(d) {
@@ -440,7 +420,14 @@
                       } else if (d.unit === "hours") {
                         return hourArc(d);
                       }
-                    }).attr("class", "clockhand").attr("stroke", "lightgray").attr("stroke-width", function(d) {
+                    }).attr("class", "clockhand").attr("stroke", function() {
+                      if (current_layer_idx === layers.length - 1) {
+                        return "blue"
+                      }
+                      else {
+                        return "lightgray"
+                      }
+                    }).attr("stroke-width", function(d) {
                       if (d.unit === "seconds") {
                         return 2;
                       } else if (d.unit === "minutes") {
