@@ -31,7 +31,9 @@
     </head>
     <body>
         <div id="map"></div>
-        <div id="slider"></div>
+        <div id="slider">
+            <div id="tool-tip">vat | tik | sleep</div>
+        </div>
         <div class="chart"></div>
         <script type="text/javascript" src="js/jquery/jquery.min.js"></script>
         <script type="text/javascript" src="js/openlayers/OpenLayers.js"></script>
@@ -47,6 +49,8 @@
          </style>        
         <script type="text/javascript">
 
+            $('#tool-tip').delay(3000).fadeOut('slow');
+        
             // Callbacks to enable geolocation
             var onSuccess = function(position) {
                 map.setCenter(
@@ -55,15 +59,6 @@
                         map.getProjectionObject()
                     ),
                 11);
-                
-                console.debug('Latitude: '          + position.coords.latitude          + '\n' +
-                      'Longitude: '         + position.coords.longitude         + '\n' +
-                      'Altitude: '          + position.coords.altitude          + '\n' +
-                      'Accuracy: '          + position.coords.accuracy          + '\n' +
-                      'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-                      'Heading: '           + position.coords.heading           + '\n' +
-                      'Speed: '             + position.coords.speed             + '\n' +
-                      'Timestamp: '         + position.timestamp                + '\n');
             };
 
             // onError Callback receives a PositionError object
@@ -72,9 +67,6 @@
                 alert('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
                 return true; // fail silently...
             }
-
-            
-
 
             (function () {
                 var map = null;
@@ -281,7 +273,6 @@
 
                     hammertime.on("tap", function(ev) {
                         ev.gesture.preventDefault();
-                        console.log(ev);
                         
                         toggle();
 
@@ -290,12 +281,12 @@
 
                     hammertime.on("hold", function (ev) {
                         if (has_hold) {
-                            map.setCenter(
-                                new OpenLayers.LonLat(5.5698782, 52.0992287).transform(
-                                new OpenLayers.Projection("EPSG:4326"),
-                            map.getProjectionObject()
-                            ),
-                            7);
+                         map.zoomToExtent([
+                            335690.25973696, 
+                            6503778.1389354, 
+                            818772.27843202, 
+                            7218005.7311326
+                            ]);
                             has_hold = false;
                         }
                         else if (!has_hold) {
@@ -362,16 +353,17 @@
                         attribution: "",
                         sphericalMercator: true,
                         wrapDateLine: true,
+                        transitionEffect: 'resize',
                     }
                     );
 
                     map.addLayer(grey);
-                    map.setCenter(
-                        new OpenLayers.LonLat(5.5698782, 52.0992287).transform(
-                            new OpenLayers.Projection("EPSG:4326"),
-                            map.getProjectionObject()
-                        ),
-                    7);
+                    map.zoomToExtent([
+                        335690.25973696, 
+                        6503778.1389354, 
+                        818772.27843202, 
+                        7218005.7311326
+                        ]);
                 }
 
                 // Start clock
