@@ -331,7 +331,11 @@
 
                 function init_map () {
                     map = new OpenLayers.Map('map', {
-                        theme: null
+                        theme: null,
+                        controls: [
+                            new OpenLayers.Control.Navigation(
+                            {dragPanOptions: {enableKinetic: true}}
+                        )]
                     });
                     window.map = map;
                     
