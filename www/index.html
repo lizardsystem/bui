@@ -24,7 +24,6 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" type="text/css" href="js/bootstrap/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="js/openlayers/theme/default/style.css">
-        <link rel="stylesheet" type="text/css" href="js/dragdealer/dragdealer.css">
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <title>Regenradar</title>
     </head>
@@ -35,10 +34,10 @@
         <!--<script type="text/javascript" src="phonegap.js"></script>-->
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript" src="js/jquery/jquery.min.js"></script>
-        <script src="js/openlayers/OpenLayers.js"></script>
+        <script type="text/javascript" src="js/openlayers/OpenLayers.js"></script>
         <script type="text/javascript" src="js/momentjs/moment.js"></script>
         <script type="text/javascript" src="js/hammer/jquery.hammer.js"></script>
-        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script type="text/javascript" src="js/d3/d3.v3.min.js"></script>
         
         <style>
             @media screen
@@ -48,10 +47,7 @@
          </style>        
         <script type="text/javascript">
 
-            // onSuccess Callback
-            // This method accepts a Position object, which contains the
-            // current GPS coordinates
-            //
+            // Callbacks to enable geolocation
             var onSuccess = function(position) {
                 map.setCenter(
                     new OpenLayers.LonLat(position.coords.longitude, position.coords.latitude).transform(
@@ -84,23 +80,22 @@
                 var map = null;
                 wms_base_url = 'http://regenradar.lizard.net/wms/';
                 fixed_image_layer_bbox = '147419.974, 6416139.595, 1001045.904, 7224238.809';
-                // Debug info: number of hours is 3
+                
+                // Build datetime objects to retrieve wms layers later on. Number of hours is 3
                 var animationDatetimes = [];
                 var now = moment();
-                console.debug("nu = ", now.format('YYYY-MM-DDTHH:mm:ss'));
+                console.debug("Now = ", now.format('YYYY-MM-DDTHH:mm:ss'));
+                // The wms only accepts rewuests for every 5th round minute
                 now.minutes((Math.round(now.minutes()/5) * 5) % 60);
                 now.seconds(0);
-                console.debug("rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
+                console.debug("Now rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
                 for (var interval=5; interval < 240; interval=interval+5) {
                     var animationDatetime =  now.subtract('minutes', 5);
-                    console.debug(interval, animationDatetime.format('YYYY-MM-DDTHH:mm:ss'));
                     var UtsieAniDatetime = moment.utc(animationDatetime);
                     animationDatetimes.push(UtsieAniDatetime.format('YYYY-MM-DDTHH:mm:ss') + '.000Z');
                 };
                 animationDatetimes.reverse();
                 console.debug(animationDatetimes);
-                console.debug(UtsieAniDatetime);
-                console.debug(animationDatetime);
 
                 function MyLayer (dt, opacity, bbox) {
                     this.dt = dt;
@@ -149,14 +144,13 @@
                     }
                 });
 
-                var interval_ms = 200;
+                var interval_ms = 500;
                 var cycle_layers_interval = null;
                 var current_layer_idx = -1;
                 var paused_at_end = false;
                 var is_first_load = true;
 
                 var layers = [];
-                var regional_layers = [];
 
                 var full_bbox = new OpenLayers.Bounds(
                     fixed_image_layer_bbox.split(','));
@@ -233,11 +227,9 @@
                                 eventListeners: {
                                     'loadstart': function () {
                                         layers_loading++;
-                                        on_layer_loading_change();
                                     },
                                     'loadend': function () {
                                         layers_loading--;
-                                        on_layer_loading_change();
                                     }
                                 },
                                 projection: 'EPSG:3857'
@@ -315,15 +307,6 @@
                         navigator.geolocation.getCurrentPosition(onSuccess, onError);
                     })
                 };
-                
-                var clock = document.getElementById('clock');
-
-                function start_if_first_load () {
-                    if (is_first_load) {
-                        start();
-                        is_first_load = false;
-                    }
-                }
 
                 function start () {
                     cycle_layers_interval = setInterval(cycle_layers, interval_ms);
@@ -332,12 +315,6 @@
                 function stop () {
                     clearInterval(cycle_layers_interval);
                     cycle_layers_interval = null;
-                }
-
-                function stop_if_running () {
-                    if (is_running()) {
-                        stop();
-                    }
                 }
 
                 function is_running () {
@@ -353,58 +330,6 @@
                     }
                 }
 
-                function on_layer_loading_change () {
-                    if (layers_loading > 0) {
-                        // 'if' control structure split for clarity
-                        if (progress_interval === null) {
-                            set_progress(0);
-                            progress_interval = setInterval(update_progress, 300);
-                        }
-                    }
-                    else {
-                        if (progress_interval !== null) {
-                            clearInterval(progress_interval);
-                            progress_interval = null;
-                            set_progress(1);
-                        }
-                    }
-                }
-
-                function update_progress () {
-                    var num_loading_tiles = 0;
-                    var num_tiles = 0;
-                    var ratio;
-                    // sum numLoadingTiles and total amount of tiles per layer
-                    $.each(layers, function (idx, layer) {
-                        if (layer.ol_layer && layer.ol_layer.grid) {
-                            num_loading_tiles += layer.ol_layer.numLoadingTiles;
-                            for (var i=0; i<layer.ol_layer.grid.length; i++) {
-                                num_tiles += layer.ol_layer.grid[i].length;
-                            }
-                        }
-                    });
-                    if (num_tiles > 0) {
-                        ratio = 1 - num_loading_tiles / num_tiles;
-                        set_progress(ratio);
-                    }
-                    else {
-                        // no tiled/gridded layers
-                        ratio = 1 - layers_loading / layers.length;
-                        set_progress(ratio);
-                    }
-                }
-
-                function set_progress (ratio) {
-                    // clamp ratio
-                    if (ratio < 0) ratio = 0;
-                    if (ratio >= 1) ratio = 1;
-
-                    var is_ready = ratio == 1;
-                    if (is_ready) {
-                        start_if_first_load();
-                    }
-                }
-
                 function wait_until_first_layer_loaded () {
                     var wait_interval;
                     var tick = function () {
@@ -412,9 +337,11 @@
                             set_layer(0);
                             // stop self
                             clearInterval(wait_interval);
+                            // and start the show
+                            start();
                         }
                     };
-                    wait_interval = setInterval(tick, 200);
+                    wait_interval = setInterval(tick, 100);
                 }
 
                 function init_map () {
@@ -434,7 +361,6 @@
                         attribution: "",
                         sphericalMercator: true,
                         wrapDateLine: true,
-                        //numZoomLevels: 5
                     }
                     );
 
@@ -448,6 +374,7 @@
                 }
 
                 // Start clock
+                var clock = document.getElementById('clock');
                 var clockGroup, fields, height, offSetX, offSetY, pi, render, scaleHours, scaleMins, scaleSecs, vis, width;
 
                 fields = function(layer) {
@@ -476,18 +403,18 @@
                     ];
                     };
 
-                    width = 400;
-                    height = 200;
-                    offSetX = 150;
-                    offSetY = 100;
+                    width = 163;
+                    height = 163;
+                    offSetX = 81;
+                    offSetY = 81;
                     pi = Math.PI;
                     //scaleSecs = d3.scale.linear().domain([1, 60 + 999 / 1000]).range([0, 2 * pi]);
                     scaleMins = d3.scale.linear().domain([0, 59 + 59 / 60]).range([0, 2 * pi]);
                     scaleHours = d3.scale.linear().domain([0, 11 + 59 / 60]).range([0, 2 * pi]);
                     vis = d3.selectAll(".chart").append("svg:svg").attr("width", width).attr("height", height);
                     clockGroup = vis.append("svg:g").attr("transform", "translate(" + offSetX + "," + offSetY + ")");
-                    clockGroup.append("svg:circle").attr("r", 80).attr("fill", "none").attr("class", "clock outercircle").attr("stroke", "white").attr("stroke-width", 2);
-                    clockGroup.append("svg:circle").attr("r", 4).attr("fill", "black").attr("class", "clock innercircle");
+                    clockGroup.append("svg:circle").attr("r", 80).attr("fill", "none").attr("class", "clock outercircle").attr("stroke", "lightgray").attr("stroke-width", 2);
+                    clockGroup.append("svg:circle").attr("r", 4).attr("fill", "lightgray").attr("class", "clock innercircle");
 
                 render = function(data) {
                     var hourArc, minuteArc;
@@ -513,7 +440,7 @@
                       } else if (d.unit === "hours") {
                         return hourArc(d);
                       }
-                    }).attr("class", "clockhand").attr("stroke", "white").attr("stroke-width", function(d) {
+                    }).attr("class", "clockhand").attr("stroke", "lightgray").attr("stroke-width", function(d) {
                       if (d.unit === "seconds") {
                         return 2;
                       } else if (d.unit === "minutes") {
@@ -533,7 +460,6 @@
 
                 function init_neerslagradar () {
                     init_map();
-                    //init_overview();
                     init_slider();
                     init_cycle_layers();
                     wait_until_first_layer_loaded();
