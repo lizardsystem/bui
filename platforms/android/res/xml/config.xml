@@ -2,7 +2,7 @@
 <plugin name="Geolocation" value="org.apache.cordova.GeoBroker">
     <access origin="*" />
     <preference name="useBrowserHistory" value="true" />
-    <preference name="exit-on-suspend" value="false" />
+    <preference name="exit-on-suspend" value="true" />
     <preference name="permissions" value="none" />
     <preference name="orientation" value="default" />
     <preference name="target-device" value="universal" />
