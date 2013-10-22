@@ -80,7 +80,7 @@
                 return true; // fail silently...
             }
 
-            navigator.geolocation.getCurrentPosition(onSuccess, onError);
+            
 
 
             (function () {
@@ -111,46 +111,6 @@
                     this.bbox = bbox;
                     this.ol_layer = null;
                 }
-
-                var CssHideableWMS = OpenLayers.Class(OpenLayers.Layer.WMS, {
-                    cssVisibility: true,
-
-                    initialize: function (name, url, params, options) {
-                        OpenLayers.Layer.WMS.prototype.initialize.apply(
-                            this, [name, url, params, options]);
-                        if (options.cssVisibility === true || options.cssVisibility === false) {
-                            this.cssVisibility = options.cssVisibility;
-                        }
-                        this.events.on({
-                            'added': this.updateCssVisibility,
-                            'moveend': this.updateCssVisibility,
-                            scope: this});
-                    },
-
-                    destroy: function () {
-                        this.events.un({
-                            'added': this.updateCssVisibility,
-                            'moveend': this.updateCssVisibility,
-                            scope: this});
-                        OpenLayers.Layer.WMS.prototype.destroy.apply(this);
-                    },
-
-                    setCssVisibility: function (visible) {
-                        this.cssVisibility = visible;
-                        this.updateCssVisibility();
-                    },
-
-                    updateCssVisibility: function () {
-                        if (this.div) {
-                            if (this.cssVisibility) {
-                                $(this.div).show();
-                            }
-                            else {
-                                $(this.div).hide();
-                            }
-                        }
-                    }
-                });
 
                 var CssHideableImageLayer = OpenLayers.Class(OpenLayers.Layer.Image, {
                     cssVisibility: true,
@@ -293,13 +253,8 @@
                 }
 
                 function init_slider () {
-                    var hammertime = $("#slider").hammer();
 
-                    hammertime.on("dragend", function(ev) {
-                        ev.gesture.preventDefault();
-
-                        var deltaLayers = Math.round(ev.gesture.deltaX / 20);
-
+                    var slideLayer = function (deltaLayers) {
                         // figure out next layer
                         var pot_layer_idx = current_layer_idx + deltaLayers;
                         if (pot_layer_idx > layers.length && pot_layer_idx >= 0) {
@@ -317,7 +272,6 @@
                         else {
                             return true;
                         }                  
-
                         if (next_layer_idx === 0) {
                             console.debug(next_layer_idx, layers[next_layer_idx]);
                             set_layer(next_layer_idx);
@@ -325,9 +279,29 @@
                         else {
                             console.debug(next_layer_idx, layers[next_layer_idx]);
                             set_layer(next_layer_idx);
-                        }
+                        }    
+                    };
 
-                        
+                    var hammertime = $("#slider").hammer();
+                    var previous_drag = 0;
+                    hammertime.on("drag", function(ev) {
+                        ev.gesture.preventDefault();
+                        console.debug(ev.gesture.deltaX);
+                        // Check direction and move every fifth pixel
+                        if (ev.gesture.deltaX > (previous_drag+5)) {
+                            slideLayer(1);
+                            previous_drag = ev.gesture.deltaX;
+                        }
+                        if (ev.gesture.deltaX < (previous_drag-5)) {
+                            slideLayer(-1);
+                            previous_drag = ev.gesture.deltaX;
+                        }
+                        ev.stopPropagation();
+                    });
+
+                    hammertime.on("dragstart", function(ev) {
+                        ev.gesture.preventDefault();
+                        previous_drag = 0;
                         ev.stopPropagation();
                     });
 
@@ -339,6 +313,10 @@
 
                         ev.stopPropagation();
                     });
+
+                    hammertime.on("hold", function (ev) {
+                        navigator.geolocation.getCurrentPosition(onSuccess, onError);
+                    })
                 };
                 
                 var clock = document.getElementById('clock');
