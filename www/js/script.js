@@ -272,12 +272,14 @@
                 var wait_interval;
                 var tick = function () {
                     if (layers[0] && layers[0].ol_layer && !layers[0].ol_layer.loading) {
+                        //set clock
+                        initClock(layers[0]);
                         set_layer(0);
                         // stop self
                         clearInterval(wait_interval);
                     }
                 };
-                wait_interval = setInterval(tick, 100);
+                wait_interval = setInterval(tick, 200);
             }
 
             function start_when_all_layers_are_loaded () {
@@ -328,7 +330,7 @@
 
             // Start clock
             var clock = document.getElementById('clock');
-            var clockGroup, fields, height, offSetX, offSetY, pi, render, scaleHours, scaleMins, scaleSecs, vis, width;
+            var clockGroup, fields, height, offSetX, offSetY, pi, render, scaleHours, scaleMins, vis, width;
 
             fields = function(layer) {
                 var data, hour, minute, second;
@@ -338,15 +340,11 @@
                     hour = parseInt(layer.dt.slice(11,13)) + 2 + minute / 60; //Convert to local time
                 }
                 else {
-                    console.log("layer undefined");
                     minute = 0;
                     hour = 12;
                 }
                 return data = [
                   {
-                    "unit": "seconds",
-                    "numeric": second
-                  }, {
                     "unit": "minutes",
                     "numeric": minute
                   }, {
@@ -361,7 +359,7 @@
                 offSetX = 81;
                 offSetY = 81;
                 pi = Math.PI;
-                //scaleSecs = d3.scale.linear().domain([1, 60 + 999 / 1000]).range([0, 2 * pi]);
+                
                 scaleMins = d3.scale.linear().domain([0, 59 + 59 / 60]).range([0, 2 * pi]);
                 scaleHours = d3.scale.linear().domain([0, 11 + 59 / 60]).range([0, 2 * pi]);
                 vis = d3.selectAll(".chart").append("svg:svg").attr("width", width).attr("height", height);
@@ -369,19 +367,21 @@
                 clockGroup.append("svg:circle").attr("r", 80).attr("fill", "none").attr("class", "clock outercircle").attr("stroke", "lightgray").attr("stroke-width", 2);
                 clockGroup.append("svg:circle").attr("r", 4).attr("fill", "lightgray").attr("class", "clock innercircle");
 
-            render = function(data) {
+            initRender = function(data) {
                 var hourArc, minuteArc;
-                clockGroup.selectAll(".clockhand").remove();
+                
                 minuteArc = d3.svg.arc().innerRadius(0).outerRadius(70).startAngle(function(d) {
                   return scaleMins(d.numeric);
                 }).endAngle(function(d) {
                   return scaleMins(d.numeric);
                 });
+
                 hourArc = d3.svg.arc().innerRadius(0).outerRadius(50).startAngle(function(d) {
                   return scaleHours(d.numeric % 12);
                 }).endAngle(function(d) {
                   return scaleHours(d.numeric % 12);
                 });
+
                 return clockGroup.selectAll(".clockhand").data(data).enter().append("svg:path").attr("d", function(d) {
                   if (d.unit === "minutes") {
                     return minuteArc(d);
@@ -391,10 +391,10 @@
                 }).attr("class", "clockhand").attr("stroke", function() {
                   if (current_layer_idx === layers.length - 1) {
                     return "blue"
-                  }
+                    }
                   else {
                     return "lightgray"
-                  }
+                    }
                 }).attr("stroke-width", function(d) {
                   if (d.unit === "seconds") {
                     return 2;
@@ -404,6 +404,37 @@
                     return 2;
                   }
                 }).attr("fill", "none");
+            };
+
+            render = function (data) {
+                var hourArc, minuteArc;
+
+                minuteArc = d3.svg.arc().innerRadius(0).outerRadius(70).startAngle(function(d) {
+                  return scaleMins(d.numeric);
+                }).endAngle(function(d) {
+                  return scaleMins(d.numeric);
+                });
+
+                hourArc = d3.svg.arc().innerRadius(0).outerRadius(50).startAngle(function(d) {
+                  return scaleHours(d.numeric % 12);
+                }).endAngle(function(d) {
+                  return scaleHours(d.numeric % 12);
+                });
+
+                return clockGroup.selectAll(".clockhand")
+                    .data(data).transition().ease("linear").attr("d", function(d) {
+                        if (d.unit === "minutes") {
+                            return minuteArc(d);
+                        } else if (d.unit === "hours") {
+                            return hourArc(d);
+                        }
+                });
+            };
+
+            var initClock = function(layer) {
+                var data;
+                data = fields(layer);
+                return initRender(data);
             };
 
             var changeClock = function(layer) {
