@@ -26,4 +26,7 @@
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="fullscreen" value="true" />
     <preference name="webviewbounce" value="true" />
+    <feature name="Geolocation">
+        <param name="ios-package" value="CDVLocation" />
+    </feature>
 </widget>
