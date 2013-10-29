@@ -307,15 +307,16 @@
                 var grey = new OpenLayers.Layer.XYZ(
                 "Dark Grey",
                 [
-                    "http://a.tiles.mapbox.com/v3/examples.map-8ly8i7pv/${z}/${x}/${y}.png",
-                    "http://b.tiles.mapbox.com/v3/examples.map-8ly8i7pv/${z}/${x}/${y}.png",
-                    "http://c.tiles.mapbox.com/v3/examples.map-8ly8i7pv/${z}/${x}/${y}.png",
-                    "http://d.tiles.mapbox.com/v3/examples.map-8ly8i7pv/${z}/${x}/${y}.png"
+                    "tiles/${z}/${x}/${y}.png"
+                    // "http://a.tiles.mapbox.com/v3/examples.map-8ly8i7pv/${z}/${x}/${y}.png",
+                    // "http://b.tiles.mapbox.com/v3/examples.map-8ly8i7pv/${z}/${x}/${y}.png",
+                    // "http://c.tiles.mapbox.com/v3/examples.map-8ly8i7pv/${z}/${x}/${y}.png",
+                    // "http://d.tiles.mapbox.com/v3/examples.map-8ly8i7pv/${z}/${x}/${y}.png"
                 ], {
                     attribution: "",
                     sphericalMercator: true,
                     wrapDateLine: true,
-                    transitionEffect: 'resize',
+                    transitionEffect: 'resize'
                 }
                 );
 
