@@ -85,7 +85,7 @@
                 }
             });
 
-            var interval_ms = 250;
+            var interval_ms = 350;
             var cycle_layers_interval = null;
             var current_layer_idx = -1;
             var paused_at_end = false;
@@ -212,6 +212,7 @@
                         previous_drag = ev.gesture.deltaX;
                     }
                     ev.stopPropagation();
+
                 });
 
                 hammertime.on("dragstart", function(ev) {
@@ -338,7 +339,7 @@
                 if (layer != undefined) {
                     console.log(layer.dt);
                     minute = parseInt(layer.dt.slice(14,16));
-                    hour = parseInt(layer.dt.slice(11,13)) + 2 + minute / 60; //Convert to local time
+                    hour = parseInt(layer.dt.slice(11,13)) + 1 + minute / 60; //Convert to local time
                 }
                 else {
                     minute = 0;
@@ -391,10 +392,10 @@
                   }
                 }).attr("class", "clockhand").attr("stroke", function() {
                   if (current_layer_idx === layers.length - 1) {
-                    return "blue"
+                    return "blue";
                     }
                   else {
-                    return "lightgray"
+                    return "lightgray";
                     }
                 }).attr("stroke-width", function(d) {
                   if (d.unit === "seconds") {
@@ -408,6 +409,7 @@
             };
 
             render = function (data) {
+                console.debug("Changing clock")
                 var hourArc, minuteArc;
 
                 minuteArc = d3.svg.arc().innerRadius(0).outerRadius(70).startAngle(function(d) {
@@ -423,7 +425,8 @@
                 });
 
                 return clockGroup.selectAll(".clockhand")
-                    .data(data).transition().ease("linear").attr("d", function(d) {
+                    .data(data).transition().duration("150").ease("elastic", 1, 0.8)
+                    .attr("d", function(d) {
                         if (d.unit === "minutes") {
                             return minuteArc(d);
                         } else if (d.unit === "hours") {
@@ -450,7 +453,7 @@
                 init_slider();
                 init_cycle_layers();
                 wait_until_first_layer_loaded();
-                start_when_all_layers_are_loaded()
+                start_when_all_layers_are_loaded();
                 };
 
             init_neerslagradar();
