@@ -1,5 +1,4 @@
-        $('#tool-tip').delay(3000).fadeOut('slow');
-    
+
         // Callbacks to enable geolocation
         var onSuccess = function(position) {
             map.setCenter(
@@ -22,7 +21,8 @@
             wms_base_url = 'http://regenradar.lizard.net/wms/';
             fixed_image_layer_bbox = '147419.974, 6416139.595, 1001045.904, 7224238.809';
             
-            // Build datetime objects to retrieve wms layers later on. Number of hours is 3
+            // Build datetime objects to retrieve wms layers later on.
+            var hours = 3 * 60;
             var animationDatetimes = [];
             var now = moment();
             console.debug("Now = ", now.format('YYYY-MM-DDTHH:mm:ss'));
@@ -30,11 +30,11 @@
             now.minutes((Math.round(now.minutes()/5) * 5) % 60);
             now.seconds(0);
             console.debug("Now rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
-            for (var interval=5; interval < 240; interval=interval+5) {
+            for (var interval=5; interval < hours; interval=interval+5) {
                 var animationDatetime =  now.subtract('minutes', 5);
                 var UtsieAniDatetime = moment.utc(animationDatetime);
                 animationDatetimes.push(UtsieAniDatetime.format('YYYY-MM-DDTHH:mm:ss') + '.000Z');
-            };
+                }
             animationDatetimes.reverse();
             console.debug(animationDatetimes);
 
@@ -169,9 +169,11 @@
                             eventListeners: {
                                 'loadstart': function () {
                                     layers_loading++;
+                                    //on_layer_loading_change();
                                 },
                                 'loadend': function () {
                                     layers_loading--;
+                                    //on_layer_loading_change();
                                 }
                             },
                             projection: 'EPSG:3857'
@@ -186,16 +188,9 @@
             function init_slider () {
                 var has_hold = false;
                 var slideLayerBackwards = function () {
-                    if (current_layer_idx === 0) {
-                        set_layer(layers.length - 1);
-                        console.debug("Going to the end: ", current_layer_idx);
-                    }
-                    else {
-                        console.debug("Going one down: ", current_layer_idx);
-                        set_layer(current_layer_idx - 1);
-
-                    }
-                }
+                    console.debug("Going one down: ", current_layer_idx);
+                    set_layer(current_layer_idx - 1);
+                };
 
                 var hammertime = $("#slider").hammer();
                 var previous_drag = 0;
@@ -233,9 +228,9 @@
                     if (has_hold) {
 
                     map.zoomToExtent([
-                            344746, 
-                            6426965, 
-                            814375, 
+                            344746,
+                            6426965,
+                            814375,
                             7111840
                         ], {closest: true});
                         has_hold = false;
@@ -244,8 +239,8 @@
                         navigator.geolocation.getCurrentPosition(onSuccess, onError);
                         has_hold = true;
                     }
-                })
-            };
+                });
+            }
 
             function start () {
                 cycle_layers_interval = setInterval(cycle_layers, interval_ms);
@@ -289,19 +284,29 @@
                     if (layers_loading === 0) {
                         start();
                         // stop self
-                        clearInterval(wait_interval);                            
+                        clearInterval(wait_interval);
                     }
                 };
                 wait_interval = setInterval(tick, 100);
             }
 
+
+            function on_layer_loading_change () {
+                // update clock
+            }
+
             function init_map () {
                 map = new OpenLayers.Map('map', {
                     theme: null,
+                    minZoomLevel: 7,
+                    maxZoomLevel: 12,
                     controls: [
-                        new OpenLayers.Control.Navigation(
-                        {dragPanOptions: {enableKinetic: true}}
-                    )]
+                        new OpenLayers.Control.TouchNavigation({
+                        dragPanOptions: {
+                        enableKinetic: true
+                        }
+                        }),
+                        ]
                 });
                 window.map = map;
                 
@@ -317,15 +322,14 @@
                     attribution: "",
                     sphericalMercator: true,
                     wrapDateLine: true,
-                    transitionEffect: 'resize'
+                    transitionEffect: 'resize',
                 }
                 );
-
                 map.addLayer(grey);
                 map.zoomToExtent([
-                        344746, 
-                        6426965, 
-                        814375, 
+                        344746,
+                        6426965,
+                        814375,
                         7111840
                     ], {closest: true});
             }
@@ -336,10 +340,10 @@
 
             fields = function(layer) {
                 var data, hour, minute, second;
-                if (layer != undefined) {
+                if (layer !== undefined) {
                     console.log(layer.dt);
                     minute = parseInt(layer.dt.slice(14,16));
-                    hour = parseInt(layer.dt.slice(11,13)) + 1 + minute / 60; //Convert to local time
+                    hour = parseInt(layer.dt.slice(11,13)) + 1 + minute / 60; //Convert to local time WARNING: change this line atleast once every season! Cowboy programming by reuring
                 }
                 else {
                     minute = 0;
@@ -409,7 +413,7 @@
             };
 
             render = function (data) {
-                console.debug("Changing clock")
+                console.debug("Changing clock");
                 var hourArc, minuteArc;
 
                 minuteArc = d3.svg.arc().innerRadius(0).outerRadius(70).startAngle(function(d) {
