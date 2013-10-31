@@ -1,12 +1,10 @@
 
         // Callbacks to enable geolocation
         var onSuccess = function(position) {
-            map.setCenter(
-                new OpenLayers.LonLat(position.coords.longitude, position.coords.latitude).transform(
-                    new OpenLayers.Projection("EPSG:4326"),
-                    map.getProjectionObject()
-                ),
-            11);
+            console.log(position);
+            map.setView([position.coords.latitude, position.coords.longitude], 11, {
+                animate: true
+            });
         };
 
         // onError Callback receives a PositionError object
@@ -227,12 +225,9 @@
                 hammertime.on("hold", function (ev) {
                     if (has_hold) {
 
-                    map.zoomToExtent([
-                            344746,
-                            6426965,
-                            814375,
-                            7111840
-                        ], {closest: true});
+                    map.setView([51.7, 5.5], 7, {
+                        animate: true
+                    });
                         has_hold = false;
                     }
                     else if (!has_hold) {
@@ -296,6 +291,44 @@
             }
 
             function init_map () {
+                map = L.map('map', {
+                    center: [51.7, 5.5],
+                    zoom: 7,
+                    minZoom: 7,
+                    maxZoom: 12,
+                    maxBounds: [
+                        [55, 9],
+                        [45, 0]
+                        ],
+                    attributionControl: false
+                });
+                
+                map.on('zoom', function (e) {
+                    if (map.getZoom() > 7) {
+                        map.setMaxBounds([
+                        [53.8, 7.4],
+                        [49.7, 2.8]
+                        ]);
+                    }
+                    else {
+                        map.setMaxBounds([
+                        [55, 9],
+                        [45, 0]
+                        ]);
+                    }
+                });
+
+                L.tileLayer('tiles/{z}/{x}/{y}.png').addTo(map);
+
+                window.map = map;
+/*
+
+                map.zoomToExtent([
+                        344746,
+                        6426965,
+                        814375,
+                        7111840
+                    ], {closest: true});
                 map = new OpenLayers.Map('map', {
                     theme: null,
                     minZoomLevel: 7,
@@ -308,7 +341,7 @@
                         }),
                         ]
                 });
-                window.map = map;
+
                 
                 var grey = new OpenLayers.Layer.XYZ(
                 "Dark Grey",
@@ -331,7 +364,7 @@
                         6426965,
                         814375,
                         7111840
-                    ], {closest: true});
+                    ], {closest: true});*/
             }
 
             // Start clock
@@ -455,9 +488,9 @@
             function init_neerslagradar () {
                 init_map();
                 init_slider();
-                init_cycle_layers();
-                wait_until_first_layer_loaded();
-                start_when_all_layers_are_loaded();
+                //init_cycle_layers();
+                //wait_until_first_layer_loaded();
+                //start_when_all_layers_are_loaded();
                 };
 
             init_neerslagradar();
