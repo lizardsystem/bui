@@ -447,7 +447,7 @@
                 //init_cycle_layers();
                 //wait_until_first_layer_loaded();
                 //start_when_all_layers_are_loaded();
-                start()
+                //start();
                 };
 
             init_neerslagradar();
