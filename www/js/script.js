@@ -297,9 +297,9 @@
                     minZoom: 7,
                     maxZoom: 12,
                     maxBounds: [
-                        [55, 9],
-                        [45, 0]
-                        ],
+                       [55, 9],
+                       [45, 0]
+                       ],
                     attributionControl: false
                 });
                 
@@ -321,51 +321,15 @@
                 L.tileLayer('tiles/{z}/{x}/{y}.png').addTo(map);
 
                 window.map = map;
-/*
-
-                map.zoomToExtent([
-                        344746,
-                        6426965,
-                        814375,
-                        7111840
-                    ], {closest: true});
-                map = new OpenLayers.Map('map', {
-                    theme: null,
-                    minZoomLevel: 7,
-                    maxZoomLevel: 12,
-                    controls: [
-                        new OpenLayers.Control.TouchNavigation({
-                        dragPanOptions: {
-                        enableKinetic: true
-                        }
-                        }),
-                        ]
-                });
-
                 
-                var grey = new OpenLayers.Layer.XYZ(
-                "Dark Grey",
-                [
-                    "tiles/${z}/${x}/${y}.png"
-                    // "http://a.tiles.mapbox.com/v3/examples.map-8ly8i7pv/${z}/${x}/${y}.png",
-                    // "http://b.tiles.mapbox.com/v3/examples.map-8ly8i7pv/${z}/${x}/${y}.png",
-                    // "http://c.tiles.mapbox.com/v3/examples.map-8ly8i7pv/${z}/${x}/${y}.png",
-                    // "http://d.tiles.mapbox.com/v3/examples.map-8ly8i7pv/${z}/${x}/${y}.png"
-                ], {
-                    attribution: "",
-                    sphericalMercator: true,
-                    wrapDateLine: true,
-                    transitionEffect: 'resize',
-                }
-                );
-                map.addLayer(grey);
-                map.zoomToExtent([
-                        344746,
-                        6426965,
-                        814375,
-                        7111840
-                    ], {closest: true});*/
-            }
+                var imageUrl = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=2013-10-31T11%3A35%3A00.000Z',
+                imageBounds = [
+                        [53.431625094072686, 3.9286041422783113],
+                        [51.692135394958214, 4.120864884492489]
+                        ];
+                console.log("adding image layer")
+                L.imageOverlay(imageUrl, imageBounds, {zIndex: 9999, opacity: .6}).addTo(map);
+            };
 
             // Start clock
             var clock = document.getElementById('clock');
