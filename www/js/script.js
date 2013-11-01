@@ -16,9 +16,8 @@
 
         (function () {
             var map = null;
-            wms_base_url = 'http://regenradar.lizard.net/wms/';
-            fixed_image_layer_bbox = '147419.974, 6416139.595, 1001045.904, 7224238.809';
-            
+            var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
+            var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME='
             // Build datetime objects to retrieve wms layers later on.
             var hours = 3 * 60;
             var animationDatetimes = [];
@@ -83,7 +82,7 @@
                 }
             });
 
-            var interval_ms = 350;
+            var interval_ms = 100;
             var cycle_layers_interval = null;
             var current_layer_idx = -1;
             var paused_at_end = false;
@@ -91,53 +90,58 @@
 
             var layers = [];
 
-            var full_bbox = new OpenLayers.Bounds(
-                fixed_image_layer_bbox.split(','));
-
-            for (var i=0; i < animationDatetimes.length; i++) {
-                var dt = animationDatetimes[i];
-                layers.push(new MyLayer(dt, 0.6, full_bbox));
-            }
-
             var layers_loading = 0;
             var progress_interval = null;
+            var oldLayer = undefined;
+            var define = 0
 
             function set_layer (layer_idx) {
+                next_layer_datetime = animationDatetimes[layer_idx];
+                console.log(next_layer_datetime);
+                var imageUrl = imageUrlBase + next_layer_datetime; //'2013-10-31T11%3A35%3A00.000Z'
+                var newLayer = L.imageOverlay(imageUrl, imageBounds, {zIndex: 9999, opacity: 0});
                 if (current_layer_idx != layer_idx) {
                     // swap out visibility
-                    if (current_layer_idx != -1) {
-                        var current_layer = layers[current_layer_idx];
-                        current_layer.ol_layer.setCssVisibility(false);
-                    }
-                    if (layer_idx != -1) {
-                        var layer = layers[layer_idx];
-                        layer.ol_layer.setCssVisibility(true);
-                        changeClock(layer);
-                        //console.debug("Switch to layer: ", layer)
-                    }
+                    console.log("adding: ", newLayer);
+                    newLayer.on('load', function (e) {
+                        if (oldLayer !== undefined) {
+                            console.log("removing: ", oldLayer);
+                            newLayer.setOpacity(0.6);
+                            map.removeLayer(oldLayer);
+                            delete window.oldLayer;
+                            oldLayer = newLayer;
+                        }
+                    });
+                    newLayer.addTo(map);
+                    changeClock(next_layer_datetime);
 
                     // update with next layer index
                     current_layer_idx = layer_idx;
+                    if (define !==  1) {
+                        console.log("oldlayer: ", oldLayer);
+                        oldLayer = newLayer;
+                        define = 1;
+                    }
+                    
                 }
             }
 
             function cycle_layers () {
-                var current_layer = layers[current_layer_idx];
+                /*var current_layer = layers[current_layer_idx];
                 // don't swap layers when we're still loading
                 if ((!current_layer || !current_layer.ol_layer.loading) &&
-                    (!paused_at_end)) {
-                    // figure out next layer
-                    var next_layer_idx = (current_layer_idx >= layers.length - 1) ? 0 : current_layer_idx + 1;
-                    if (next_layer_idx === 0) {
-                        paused_at_end = true;
+                    (!paused_at_end)) {*/
+                // figure out next layer
+                var next_layer_idx = current_layer_idx === animationDatetimes.length -1 ? 0 : current_layer_idx + 1;
+                if (next_layer_idx === 0) {
+                    paused_at_end = true;
 
-                        setTimeout(function () { paused_at_end = false; set_layer(0); }, 1000);
-                        set_layer(next_layer_idx);
-                    }
-                    else {
-                        set_layer(next_layer_idx);
-                    }
+                    setTimeout(function () { paused_at_end = false; set_layer(0); }, 1000);
+                    set_layer(next_layer_idx);
                 }
+                else {
+                    set_layer(next_layer_idx);
+                    }
             }
 
             function init_cycle_layers () {
@@ -196,7 +200,7 @@
                     ev.gesture.preventDefault();
                     console.debug(ev.gesture.deltaX);
                     // Check direction and move every fifth pixel
-                    if (ev.gesture.deltaX > (previous_drag+5) && current_layer_idx < layers.length-1) {
+                    if (ev.gesture.deltaX > (previous_drag+5) && current_layer_idx < animationDatetimes.length-1) {
                         cycle_layers();
                         previous_drag = ev.gesture.deltaX;
                     }
@@ -300,7 +304,8 @@
                        [55, 9],
                        [45, 0]
                        ],
-                    attributionControl: false
+                    attributionControl: false,
+                    zoomControl: false
                 });
                 
                 map.on('zoom', function (e) {
@@ -321,26 +326,18 @@
                 L.tileLayer('tiles/{z}/{x}/{y}.png').addTo(map);
 
                 window.map = map;
-                
-                var imageUrl = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=2013-10-31T11%3A35%3A00.000Z',
-                imageBounds = [
-                        [53.431625094072686, 3.9286041422783113],
-                        [51.692135394958214, 4.120864884492489]
-                        ];
-                console.log("adding image layer")
-                L.imageOverlay(imageUrl, imageBounds, {zIndex: 9999, opacity: .6}).addTo(map);
             };
 
             // Start clock
             var clock = document.getElementById('clock');
             var clockGroup, fields, height, offSetX, offSetY, pi, render, scaleHours, scaleMins, vis, width;
 
-            fields = function(layer) {
+            fields = function(layer_datetime) {
                 var data, hour, minute, second;
-                if (layer !== undefined) {
-                    console.log(layer.dt);
-                    minute = parseInt(layer.dt.slice(14,16));
-                    hour = parseInt(layer.dt.slice(11,13)) + 1 + minute / 60; //Convert to local time WARNING: change this line atleast once every season! Cowboy programming by reuring
+                if (layer_datetime !== undefined) {
+                    console.log(layer_datetime);
+                    minute = parseInt(layer_datetime.slice(14,16));
+                    hour = parseInt(layer_datetime.slice(11,13)) + 1 + minute / 60; //Convert to local time WARNING: change this line atleast once every season! Cowboy programming by reuring
                 }
                 else {
                     minute = 0;
@@ -391,14 +388,8 @@
                   } else if (d.unit === "hours") {
                     return hourArc(d);
                   }
-                }).attr("class", "clockhand").attr("stroke", function() {
-                  if (current_layer_idx === layers.length - 1) {
-                    return "blue";
-                    }
-                  else {
-                    return "lightgray";
-                    }
-                }).attr("stroke-width", function(d) {
+                }).attr("class", "clockhand").attr("stroke", "lightgray")
+                .attr("stroke-width", function(d) {
                   if (d.unit === "seconds") {
                     return 2;
                   } else if (d.unit === "minutes") {
@@ -436,15 +427,15 @@
                 });
             };
 
-            var initClock = function(layer) {
+            var initClock = function(layer_datetime) {
                 var data;
-                data = fields(layer);
+                data = fields(layer_datetime);
                 return initRender(data);
             };
 
-            var changeClock = function(layer) {
+            var changeClock = function(layer_datetime) {
                 var data;
-                data = fields(layer);
+                data = fields(layer_datetime);
                 return render(data);
             };
             // End clock
@@ -452,9 +443,11 @@
             function init_neerslagradar () {
                 init_map();
                 init_slider();
+                initClock(animationDatetimes[0]);
                 //init_cycle_layers();
                 //wait_until_first_layer_loaded();
                 //start_when_all_layers_are_loaded();
+                start()
                 };
 
             init_neerslagradar();
