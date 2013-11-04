@@ -103,15 +103,22 @@
                     );
                 }
 
+                gotDirectory = function (directory) {
+                    console.debug("Got Directory, getting or creating a dummy file");
+                    directory.getFile("test.png", {create: true, exclusive: false}, gotFile, onFileError);
+                }
+
                 gotFileSystem = function (fileSystem) {
-                    console.debug(fileSystem.name);
-                    // Get the data directory, creating it if it doesn't exist.
-                    dataDir = fileSystem.root.getDirectory("bui", {create: true});
-                    dataDir.getFile("test.png", {create: true, exclusive: false}, gotFile, onFileError);
+                    console.debug("Getting or creating a directory");
+                    fileSystem.root.getDirectory("bui", {create: true, exclusive: false}, gotDirectory, onDirectoryError);
                 }
 
                 onFileSystemError = function (msg) {
                     console.error("No filesystem: ", msg);
+                }
+
+                onDirectoryError = function (msg) {
+                    console.error("No directory: ", msg);
                 }
 
                 onFileError = function(msg) {
