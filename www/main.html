@@ -80,36 +80,46 @@
 
                 var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME='
 
+                gotFile = function (file) {
+                    var sPath = file.fullPath.replace("test.png","");
+                    var fileTransfer = new FileTransfer();
+                    file.remove();
 
-                gotFileSystem = function (fileSystem) {
-                    console.debug("filesystem: ", fileSystem);
+                    var uri = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=2013-11-04T14%3A00%3A00.000Z';
+                    var filePath = sPath + "test.png"
+
+                    console.log("Ready to download some files!");
+                    fileTransfer.download(
+                        uri,
+                        filePath,
+                        function(entry) {
+                            console.log("download complete: " + entry.fullPath);
+                        },
+                        function(error) {
+                            console.log("download error source " + error.source);
+                            console.log("download error target " + error.target);
+                            console.log("upload error code" + error.code);
+                        }
+                    );
                 }
 
-                onError = function (msg) {
+                gotFileSystem = function (fileSystem) {
+                    console.debug(fileSystem.name);
+                    // Get the data directory, creating it if it doesn't exist.
+                    dataDir = fileSystem.root.getDirectory("bui", {create: true});
+                    dataDir.getFile("test.png", {create: true, exclusive: false}, gotFile, onFileError);
+                }
+
+                onFileSystemError = function (msg) {
                     console.error("No filesystem: ", msg);
                 }
 
-                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onError, onError);
+                onFileError = function(msg) {
+                    console.error("No file: ", msg)
+                }
 
-
-                
-                var fileTransfer = new FileTransfer();
-                
-                var uri = encodeURI(imageUrlBase + animationDatetimes[0]);
-/*                console.log("Ready to download some files!");
-                fileTransfer.download(
-                    uri,
-                    filePath,
-                    function(entry) {
-                        console.log("download complete: " + entry.fullPath);
-                    },
-                    function(error) {
-                        console.log("download error source " + error.source);
-                        console.log("download error target " + error.target);
-                        console.log("upload error code" + error.code);
-                    },
-                    false
-                    );*/
+                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onFileSystemError);
+               
             };
 
 
