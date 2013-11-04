@@ -31,8 +31,8 @@
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <title>Regenradar</title>
     </head>
-    <body>
-
+    <body onload="init();">
+        
         <style>
             @media screen
             {
@@ -54,8 +54,66 @@
         <script type="text/javascript" src="js/momentjs/moment.js"></script>
         <script type="text/javascript" src="js/hammer/jquery.hammer.js"></script>
         <script type="text/javascript" src="js/d3/d3.v3.min.js"></script>     
-        <script type="text/javascript" src="js/script.js"></script>
+        <!-- <script type="text/javascript" src="js/script.js"></script> -->
         <script>
+            function init(){
+                document.addEventListener("deviceready", onDeviceReady, false);
+            };
+
+            function onDeviceReady(){
+                // Build datetime objects to retrieve wms layers later on.
+                var hours = 3 * 60;
+                var animationDatetimes = [];
+                var now = moment();
+                console.debug("Now = ", now.format('YYYY-MM-DDTHH:mm:ss'));
+                // The wms only accepts requests for every 5th minute exact
+                now.minutes((Math.round(now.minutes()/5) * 5) % 60);
+                now.seconds(0);
+                console.debug("Now rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
+                for (var interval=5; interval < hours; interval=interval+5) {
+                    var animationDatetime =  now.subtract('minutes', 5);
+                    var UtsieAniDatetime = moment.utc(animationDatetime);
+                    animationDatetimes.push(UtsieAniDatetime.format('YYYY-MM-DDTHH:mm:ss') + '.000Z');
+                    }
+                animationDatetimes.reverse();
+                console.debug(animationDatetimes);
+
+                var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME='
+
+
+                gotFileSystem = function (fileSystem) {
+                    console.debug("filesystem: ", fileSystem);
+                }
+
+                onError = function (msg) {
+                    console.error("No filesystem: ", msg);
+                }
+
+                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onError, onError);
+
+
+                
+                var fileTransfer = new FileTransfer();
+                
+                var uri = encodeURI(imageUrlBase + animationDatetimes[0]);
+/*                console.log("Ready to download some files!");
+                fileTransfer.download(
+                    uri,
+                    filePath,
+                    function(entry) {
+                        console.log("download complete: " + entry.fullPath);
+                    },
+                    function(error) {
+                        console.log("download error source " + error.source);
+                        console.log("download error target " + error.target);
+                        console.log("upload error code" + error.code);
+                    },
+                    false
+                    );*/
+            };
+
+
+/*
         console.debug("Device is not ready")
         document.addEventListener("deviceready", function () {
             console.debug("Device ready")
@@ -77,10 +135,9 @@
             animationDatetimes.reverse();
             console.debug(animationDatetimes);
 
-
             var fileTransfer = new FileTransfer();
             var uri = encodeURI("http://some.server.com/download.php");
-
+            console.log("Ready to download some files!");
             fileTransfer.download(
                 uri,
                 filePath,
@@ -94,7 +151,7 @@
                 },
                 false
                 );
-        }, false);
+        }, false);*/
        </script>
     </body>
 </html>
