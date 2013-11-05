@@ -14,177 +14,93 @@
             return true; // fail silently...
         }
 
-        (function () {
-            var map = null;
-            var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
-            var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME='
-            // Build datetime objects to retrieve wms layers later on.
-            var hours = 3 * 60;
-            var animationDatetimes = [];
-            var now = moment();
-            console.debug("Now = ", now.format('YYYY-MM-DDTHH:mm:ss'));
-            // The wms only accepts requests for every 5th minute exact
-            now.minutes((Math.round(now.minutes()/5) * 5) % 60);
-            now.seconds(0);
-            console.debug("Now rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
-            for (var interval=5; interval < hours; interval=interval+5) {
-                var animationDatetime =  now.subtract('minutes', 5);
-                var UtsieAniDatetime = moment.utc(animationDatetime);
-                animationDatetimes.push(UtsieAniDatetime.format('YYYY-MM-DDTHH:mm:ss') + '.000Z');
-                }
-            animationDatetimes.reverse();
-            console.debug(animationDatetimes);
+        function init () {
+            document.addEventListener("deviceready", whichImagesAreWeTalking(), false);
+        }
 
-            function MyLayer (dt, opacity, bbox) {
-                this.dt = dt;
-                this.opacity = opacity;
-                this.bbox = bbox;
-                this.ol_layer = null;
+        function whichImagesAreWeTalking() {
+            var radarImages = [];
+
+            function success(entries) {
+                var i;
+                console.log("This is how many entries we have: " + entries.length);
+                for (i=0; i < entries.length; i++) {
+                    console.log(entries[i].name);
+                    radarImages.push(entries[i].toURL());
+                    console.log("Radar images: " + radarImages);
+                radarImages.reverse();
+                roll(radarImages);
+                }
             }
 
-            var CssHideableImageLayer = OpenLayers.Class(OpenLayers.Layer.Image, {
-                cssVisibility: true,
+            function fail(error) {
+                alert("Failed to list directory contents: " + error.code);
+            }
 
-                initialize: function (name, url, extent, size, options) {
-                    OpenLayers.Layer.Image.prototype.initialize.apply(
-                        this, [name, url, extent, size, options]);
-                    if (options.cssVisibility === true || options.cssVisibility === false) {
-                        this.cssVisibility = options.cssVisibility;
-                    }
-                    this.events.on({
-                        'added': this.updateCssVisibility,
-                        'moveend': this.updateCssVisibility,
-                        scope: this});
-                },
+            gotDirectory = function (dir) {
+                // Get a directory reader
+                var directoryReader = dir.createReader();
 
-                destroy: function () {
-                    this.events.un({
-                        'added': this.updateCssVisibility,
-                        'moveend': this.updateCssVisibility,
-                        scope: this});
-                    OpenLayers.Layer.Image.prototype.destroy.apply(this);
-                },
+                // Get a list of all the entries in the directory
+                directoryReader.readEntries(success,fail);
+            };
 
-                setCssVisibility: function (visible) {
-                    this.cssVisibility = visible;
-                    this.updateCssVisibility();
-                },
+            gotFileSystem = function (fileSystem) {
+                console.debug("Got Filesystem, getting directory");
+                fileSystem.root.getDirectory("bui", {create: false}, gotDirectory, dirError);
+            };
 
-                updateCssVisibility: function () {
-                    if (this.div) {
-                        if (this.cssVisibility) {
-                            $(this.div).show();
-                        }
-                        else {
-                            $(this.div).hide();
-                        }
-                    }
-                }
-            });
+            onFileSystemError = function (msg) {
+                console.error("No filesystem: ", msg);
+            };
 
-            var interval_ms = 100;
+            dirError = function (msg) {
+                console.error("Failed getting the directory");
+            };
+
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onFileSystemError);
+        }
+
+        function roll(radarImages) {
+            var map = null;
+            var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
+            console.log(radarImages);
+            var interval_ms = 300;
             var cycle_layers_interval = null;
             var current_layer_idx = -1;
-            var paused_at_end = false;
-            var is_first_load = true;
-
-            var layers = [];
-
-            var layers_loading = 0;
-            var progress_interval = null;
             var oldLayer = undefined;
-            var define = 0
+            //var define = 0;
 
             function set_layer (layer_idx) {
-                next_layer_datetime = animationDatetimes[layer_idx];
-                console.log(next_layer_datetime);
-                var imageUrl = imageUrlBase + next_layer_datetime; //'2013-10-31T11%3A35%3A00.000Z'
-                var newLayer = L.imageOverlay(imageUrl, imageBounds, {zIndex: 9999, opacity: 0});
+                var imageUrl = radarImages[layer_idx];
+                var newLayer = L.imageOverlay(imageUrl, imageBounds, {zIndex: 9999, opacity: 0.6});
                 if (current_layer_idx != layer_idx) {
-                    // swap out visibility
-                    console.log("adding: ", newLayer);
-                    newLayer.on('load', function (e) {
-                        if (oldLayer !== undefined) {
-                            console.log("removing: ", oldLayer);
-                            newLayer.setOpacity(0.6);
-                            map.removeLayer(oldLayer);
-                            delete window.oldLayer;
-                            oldLayer = newLayer;
-                        }
-                    });
+                    // swap out layers
+                    console.log("add to map: " + layer_idx);
                     newLayer.addTo(map);
-                    changeClock(next_layer_datetime);
-
-                    // update with next layer index
-                    current_layer_idx = layer_idx;
-                    if (define !==  1) {
-                        console.log("oldlayer: ", oldLayer);
-                        oldLayer = newLayer;
-                        define = 1;
-                    }
                     
+                    if (oldLayer !== undefined) {
+                        console.log("remove from map: " + current_layer_idx);
+                        map.removeLayer(oldLayer);
+                        delete window.oldLayer;
+                    }
+                    oldLayer = newLayer;
+                    current_layer_idx = layer_idx;
+                    //changeClock(next_layer_datetime);
                 }
             }
 
             function cycle_layers () {
-                /*var current_layer = layers[current_layer_idx];
-                // don't swap layers when we're still loading
-                if ((!current_layer || !current_layer.ol_layer.loading) &&
-                    (!paused_at_end)) {*/
-                // figure out next layer
-                var next_layer_idx = current_layer_idx === animationDatetimes.length -1 ? 0 : current_layer_idx + 1;
+                console.debug(current_layer_idx + " " + radarImages.length);
+                var next_layer_idx = current_layer_idx === radarImages.length -1 ? 0 : current_layer_idx + 1;
+                console.debug(next_layer_idx);
                 if (next_layer_idx === 0) {
-                    paused_at_end = true;
-
-                    setTimeout(function () { paused_at_end = false; set_layer(0); }, 1000);
+                    setTimeout(set_layer(0), 1000);
                     set_layer(next_layer_idx);
                 }
                 else {
                     set_layer(next_layer_idx);
                     }
-            }
-
-            function init_cycle_layers () {
-                var init_layer = function (idx, layer) {
-                    var dt_iso_8601 = layer.dt;
-                    var wms_params = {
-                        WIDTH: 525,
-                        HEIGHT: 497,
-                        SRS: 'EPSG:3857',
-                        BBOX: layer.bbox.toBBOX(),
-                        TIME: dt_iso_8601
-                    };
-                    var wms_url = wms_base_url + '?' + $.param(wms_params);
-                    var ol_layer = new CssHideableImageLayer(
-                        'L' + idx,
-                        wms_url,
-                        layer.bbox,
-                        new OpenLayers.Size(525, 497),
-                        {
-                            isBaseLayer: false,
-                            alwaysInRange: true,
-                            visibility: true, // keep this, so all layers are preloaded in the browser
-                            cssVisibility: false, // hide layer again with this custom option
-                            displayInLayerSwitcher: false,
-                            metadata: layer,
-                            opacity: layer.opacity,
-                            eventListeners: {
-                                'loadstart': function () {
-                                    layers_loading++;
-                                    //on_layer_loading_change();
-                                },
-                                'loadend': function () {
-                                    layers_loading--;
-                                    //on_layer_loading_change();
-                                }
-                            },
-                            projection: 'EPSG:3857'
-                        }
-                    );
-                    map.addLayer(ol_layer);
-                    layer.ol_layer = ol_layer;
-                };
-                $.each(layers, init_layer);
             }
 
             function init_slider () {
@@ -194,13 +110,14 @@
                     set_layer(current_layer_idx - 1);
                 };
 
-                var hammertime = $("#slider").hammer();
+                var slider = document.getElementById("slider");
+                var hammertime = Hammer(slider);
                 var previous_drag = 0;
                 hammertime.on("drag", function(ev) {
                     ev.gesture.preventDefault();
                     console.debug(ev.gesture.deltaX);
                     // Check direction and move every fifth pixel
-                    if (ev.gesture.deltaX > (previous_drag+5) && current_layer_idx < animationDatetimes.length-1) {
+                    if (ev.gesture.deltaX > (previous_drag+5) && current_layer_idx < radarImages.length-1) {
                         cycle_layers();
                         previous_drag = ev.gesture.deltaX;
                     }
@@ -443,15 +360,13 @@
             function init_neerslagradar () {
                 init_map();
                 init_slider();
-                initClock(animationDatetimes[0]);
+                //initClock(animationDatetimes[0]);
                 //init_cycle_layers();
                 //wait_until_first_layer_loaded();
                 //start_when_all_layers_are_loaded();
-                //start();
-                };
+                start();
+                }
 
             init_neerslagradar();
 
-            })();
-
-        app.initialize();
+            }

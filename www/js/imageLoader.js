@@ -1,11 +1,6 @@
-function init(){
-    var animationDatetimes = buildAnimationDatetimes();
-    document.addEventListener("deviceready", onDeviceReady(animationDatetimes), false);
-    }
-
 function buildAnimationDatetimes () {
         // Build datetime objects to retrieve wms layers later on.
-    var hours = 3 * 60;
+    var hours = 1 * 60;
     var animationDatetimes = [];
     var now = moment();
     console.debug("Now = ", now.format('YYYY-MM-DDTHH:mm:ss'));
@@ -14,22 +9,28 @@ function buildAnimationDatetimes () {
     now.minutes((Math.round(now.minutes()/5) * 5) % 60);
     now.seconds(0);
     console.debug("Now rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
+
     for (var interval = 5; interval < hours; interval = interval + 5) {
         var animationDatetime =  now.subtract('minutes', 5);
         var UtsieAniDatetime = moment.utc(animationDatetime);
         animationDatetimes.push(UtsieAniDatetime.format('YYYY-MM-DDTHH:mm:ss') + '.000Z');
         }
+
     animationDatetimes.reverse();
-    console.debug(animationDatetimes);
     console.debug(animationDatetimes.length);
     return animationDatetimes;
+}
+
+function init(){
+    var animationDatetimes = buildAnimationDatetimes();
+    document.addEventListener("deviceready", onDeviceReady(animationDatetimes), false);
 }
 
 function onDeviceReady (animationDatetimes) {
 
     var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=';
 
-    var radarImages = [];
+    window.radarImages = [];
 
     gotFile = function (file) {
         console.debug("Got dummy file");
@@ -44,26 +45,30 @@ function onDeviceReady (animationDatetimes) {
 
         var succes = function(entry) {
             count++;
+            lastOne = count === animationDatetimes.length ? true: false;
             console.log("COUNT: " + count + " of " + animationDatetimes.length);
-            radarImages.push(entry.toURL());
+            window.radarImages.push(entry.toURL());
             console.log("download complete: " + entry.toURL());
             if (lastOne) {
                 window.location='./main.html';
+                console.log("Start the show! \n" +  window.radarImages);
             }
         };
 
         var failure = function(error) {
+            count++;
+            lastOne = count === animationDatetimes.length ? true: false;
             console.log("download error source " + error.source);
             console.log("download error target " + error.target);
             console.log("upload error code" + error.code);
             if (lastOne) {
                 window.location='./main.html';
+                console.log("Start the show! \n" +  window.radarImages);
             }
         };
 
         var lastOne = false;
         for (var i = animationDatetimes.length - 1; i >= 0; i--) {
-            lastOne = i === 0 ? true: false;
             uri = imageUrlBase + animationDatetimes[i];
             filePath = sPath + animationDatetimes[i] + '.png';
             fileTransfer.download(
@@ -112,4 +117,4 @@ function onDeviceReady (animationDatetimes) {
 
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onFileSystemError);
     
-};
+}
