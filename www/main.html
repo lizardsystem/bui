@@ -80,19 +80,26 @@
 
                 var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME='
 
+                var radarImages = [];
+
                 gotFile = function (file) {
+                    console.debug("Got dummy file")
                     var sPath = file.fullPath.replace("test.png","");
                     var fileTransfer = new FileTransfer();
                     file.remove();
 
-                    var uri = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=2013-11-04T14%3A00%3A00.000Z';
-                    var filePath = sPath + "test.png"
+                    //encodeURI()
+                    var uri = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=' + 
+                        animationDatetimes[1]; //2013-11-04T14%3A00%3A00.000Z
+                    var filePath = sPath + animationDatetimes[1] + '.png';
 
                     console.log("Ready to download some files!");
                     fileTransfer.download(
                         uri,
                         filePath,
                         function(entry) {
+                            console.log(entry.toURL());
+                            radarImages.push(entry.toURL());
                             console.log("download complete: " + entry.fullPath);
                         },
                         function(error) {
@@ -104,12 +111,12 @@
                 }
 
                 gotDirectory = function (directory) {
-                    console.debug("Got Directory, getting or creating a dummy file");
+                    console.debug("Got Directory, getting or creating a dummy file.");
                     directory.getFile("test.png", {create: true, exclusive: false}, gotFile, onFileError);
                 }
 
                 gotFileSystem = function (fileSystem) {
-                    console.debug("Getting or creating a directory");
+                    console.debug("Got Filesystem, getting or creating a directory.");
                     fileSystem.root.getDirectory("bui", {create: true, exclusive: false}, gotDirectory, onDirectoryError);
                 }
 
