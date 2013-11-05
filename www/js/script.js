@@ -22,15 +22,14 @@
             var radarImages = [];
 
             function success(entries) {
-                var i;
                 console.log("This is how many entries we have: " + entries.length);
-                for (i=0; i < entries.length; i++) {
+                for (var i=0; i < entries.length; i++) {
                     console.log(entries[i].name);
                     radarImages.push(entries[i].toURL());
                     console.log("Radar images: " + radarImages);
-                radarImages.reverse();
-                roll(radarImages);
                 }
+                radarImages.sort();
+                roll(radarImages);
             }
 
             function fail(error) {
