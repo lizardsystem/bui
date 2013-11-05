@@ -19,9 +19,6 @@
 -->
 <html>
     <head>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript" src="download.js"></script>
         <meta charset="utf-8" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
@@ -31,7 +28,7 @@
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <title>Regenradar</title>
     </head>
-    <body onload="init();">
+    <body>
         
         <style>
             @media screen
@@ -55,127 +52,5 @@
         <script type="text/javascript" src="js/hammer/jquery.hammer.js"></script>
         <script type="text/javascript" src="js/d3/d3.v3.min.js"></script>     
         <!-- <script type="text/javascript" src="js/script.js"></script> -->
-        <script>
-            function init(){
-                document.addEventListener("deviceready", onDeviceReady, false);
-            };
-
-            function onDeviceReady(){
-                // Build datetime objects to retrieve wms layers later on.
-                var hours = 3 * 60;
-                var animationDatetimes = [];
-                var now = moment();
-                console.debug("Now = ", now.format('YYYY-MM-DDTHH:mm:ss'));
-                // The wms only accepts requests for every 5th minute exact
-                now.minutes((Math.round(now.minutes()/5) * 5) % 60);
-                now.seconds(0);
-                console.debug("Now rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
-                for (var interval=5; interval < hours; interval=interval+5) {
-                    var animationDatetime =  now.subtract('minutes', 5);
-                    var UtsieAniDatetime = moment.utc(animationDatetime);
-                    animationDatetimes.push(UtsieAniDatetime.format('YYYY-MM-DDTHH:mm:ss') + '.000Z');
-                    }
-                animationDatetimes.reverse();
-                console.debug(animationDatetimes);
-
-                var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME='
-
-                var radarImages = [];
-
-                gotFile = function (file) {
-                    console.debug("Got dummy file")
-                    var sPath = file.fullPath.replace("test.png","");
-                    var fileTransfer = new FileTransfer();
-                    file.remove();
-
-                    //encodeURI()
-                    var uri = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=' + 
-                        animationDatetimes[1]; //2013-11-04T14%3A00%3A00.000Z
-                    var filePath = sPath + animationDatetimes[1] + '.png';
-
-                    console.log("Ready to download some files!");
-                    fileTransfer.download(
-                        uri,
-                        filePath,
-                        function(entry) {
-                            console.log(entry.toURL());
-                            radarImages.push(entry.toURL());
-                            console.log("download complete: " + entry.fullPath);
-                        },
-                        function(error) {
-                            console.log("download error source " + error.source);
-                            console.log("download error target " + error.target);
-                            console.log("upload error code" + error.code);
-                        }
-                    );
-                }
-
-                gotDirectory = function (directory) {
-                    console.debug("Got Directory, getting or creating a dummy file.");
-                    directory.getFile("test.png", {create: true, exclusive: false}, gotFile, onFileError);
-                }
-
-                gotFileSystem = function (fileSystem) {
-                    console.debug("Got Filesystem, getting or creating a directory.");
-                    fileSystem.root.getDirectory("bui", {create: true, exclusive: false}, gotDirectory, onDirectoryError);
-                }
-
-                onFileSystemError = function (msg) {
-                    console.error("No filesystem: ", msg);
-                }
-
-                onDirectoryError = function (msg) {
-                    console.error("No directory: ", msg);
-                }
-
-                onFileError = function(msg) {
-                    console.error("No file: ", msg)
-                }
-
-                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onFileSystemError);
-               
-            };
-
-
-/*
-        console.debug("Device is not ready")
-        document.addEventListener("deviceready", function () {
-            console.debug("Device ready")
-            var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME='
-            // Build datetime objects to retrieve wms layers later on.
-            var hours = 3 * 60;
-            var animationDatetimes = [];
-            var now = moment();
-            console.debug("Now = ", now.format('YYYY-MM-DDTHH:mm:ss'));
-            // The wms only accepts requests for every 5th minute exact
-            now.minutes((Math.round(now.minutes()/5) * 5) % 60);
-            now.seconds(0);
-            console.debug("Now rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
-            for (var interval=5; interval < hours; interval=interval+5) {
-                var animationDatetime =  now.subtract('minutes', 5);
-                var UtsieAniDatetime = moment.utc(animationDatetime);
-                animationDatetimes.push(UtsieAniDatetime.format('YYYY-MM-DDTHH:mm:ss') + '.000Z');
-                }
-            animationDatetimes.reverse();
-            console.debug(animationDatetimes);
-
-            var fileTransfer = new FileTransfer();
-            var uri = encodeURI("http://some.server.com/download.php");
-            console.log("Ready to download some files!");
-            fileTransfer.download(
-                uri,
-                filePath,
-                function(entry) {
-                    console.log("download complete: " + entry.fullPath);
-                },
-                function(error) {
-                    console.log("download error source " + error.source);
-                    console.log("download error target " + error.target);
-                    console.log("upload error code" + error.code);
-                },
-                false
-                );
-        }, false);*/
-       </script>
     </body>
 </html>
