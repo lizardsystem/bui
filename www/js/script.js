@@ -217,6 +217,7 @@
             }
 
             function init_map () {
+                navigator.splashscreen.hide();
                 map = L.map('map', {
                     minZoom: 7,
                     maxZoom: 12,
