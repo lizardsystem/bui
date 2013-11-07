@@ -93,7 +93,7 @@
             var map = null;
             var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
             console.log(radarImages);
-            var interval_ms = 250;
+            var interval_ms = 1250;
             var cycle_layers_interval = null;
             var current_layer_idx = -1;
             var initialImageUrl = radarImages[0];
@@ -115,8 +115,12 @@
                 console.log(map._layers);
                 console.log("Thou shall removeth the old layer!", e);
                 newRadarImage.setOpacity(0.6);
-                map.removeLayer(oldLayer);
-                oldLayer = newRadarImage;
+                for (var i in map._layers) {
+                    if (map._layers[i] !== e.target && map._layers[i]._url !== "tiles/{z}/{x}/{y}.png") {
+                        console.debug("removing: ", map._layers[i]);
+                        map.removeLayer(map._layers[i]);
+                    }
+                }
             }
                     
 
