@@ -1,6 +1,6 @@
 function buildAnimationDatetimes () {
         // Build datetime objects to retrieve wms layers later on.
-    var hours = 1 * 60;
+    var hours = 3 * 60;
     var animationDatetimes = [];
     var now = moment();
     console.debug("Now = ", now.format('YYYY-MM-DDTHH:mm:ss'));
