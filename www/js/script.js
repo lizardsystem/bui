@@ -202,6 +202,10 @@
                 cycle_layers_interval = null;
             }
 
+            function is_running () {
+                return cycle_layers_interval !== null;
+            }
+
             function toggle () {
                 if (is_running()) {
                     stop();
