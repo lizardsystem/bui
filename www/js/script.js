@@ -93,7 +93,7 @@
             var map = null;
             var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
             console.log(radarImages);
-            var interval_ms = 1000;
+            var interval_ms = 250;
             var cycle_layers_interval = null;
             var current_layer_idx = -1;
             var initialImageUrl = radarImages[0];
@@ -108,6 +108,7 @@
                 newRadarImage.on('load', removePreviousLayers);
                 newRadarImage.addTo(map);
                 current_layer_idx = layer_idx;
+                changeClock(imageUrl.slice(-24, -5));
             }
 
             function removePreviousLayers (e) {
@@ -117,7 +118,7 @@
                 map.removeLayer(oldLayer);
                 oldLayer = newRadarImage;
             }
-                    //changeClock(next_layer_datetime);
+                    
 
             function cycle_layers () {
                 console.debug(current_layer_idx + " " + radarImages.length);
@@ -392,7 +393,7 @@
             function init_neerslagradar () {
                 init_map();
                 init_slider();
-                //initClock(animationDatetimes[0]);
+                initClock(initialImageUrl.slice(-24, -5));
                 //init_cycle_layers();
                 //wait_until_first_layer_loaded();
                 //start_when_all_layers_are_loaded();
