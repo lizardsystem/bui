@@ -93,16 +93,16 @@
             var map = null;
             var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
             console.log(radarImages);
-            var interval_ms = 1250;
+            var interval_ms = 250;
             var cycle_layers_interval = null;
             var current_layer_idx = -1;
             var initialImageUrl = radarImages[0];
-            var oldLayer = L.imageOverlay(initialImageUrl, imageBounds, {zIndex: 9999, opacity: 0.6});
+            var oldLayer = L.imageOverlay(initialImageUrl, imageBounds, {zIndex: 9999, opacity: 0.8});
             var newRadarImage = undefined;
-            //var define = 0;
+            var imageUrl = undefined;
 
             function set_layer (layer_idx) {
-                var imageUrl = radarImages[layer_idx];
+                imageUrl = radarImages[layer_idx];
                 newRadarImage = L.imageOverlay(imageUrl, imageBounds, {zIndex: 9999, opacity: 0});
                 console.log("Adding new layer");
                 newRadarImage.on('load', removePreviousLayers);
@@ -112,15 +112,15 @@
             }
 
             function removePreviousLayers (e) {
-                console.log(map._layers);
-                console.log("Thou shall removeth the old layer!", e);
-                newRadarImage.setOpacity(0.6);
+                console.log("Current Layers: ", map._layers);
+                newRadarImage.setOpacity(0.8);
                 for (var i in map._layers) {
-                    if (map._layers[i] !== e.target && map._layers[i]._url !== "tiles/{z}/{x}/{y}.png") {
+                    if (map._layers[i]._url !== imageUrl && map._layers[i]._url !== "tiles/{z}/{x}/{y}.png") {
                         console.debug("removing: ", map._layers[i]);
                         map.removeLayer(map._layers[i]);
                     }
                 }
+                console.log("Remaining Layers: ", map._layers);
             }
                     
 
@@ -129,8 +129,8 @@
                 var next_layer_idx = current_layer_idx === radarImages.length -1 ? 0 : current_layer_idx + 1;
                 console.debug(next_layer_idx);
                 if (next_layer_idx === 0) {
-                    //window.setTimeout(console.log("waiting 1000 ms"), 1000);
-                    set_layer(next_layer_idx);
+                    console.log("Waiting " + 5 * interval_ms + "ms");
+                    setTimeout(function () {set_layer(next_layer_idx)}, 5 * interval_ms);
                 }
                 else {
                     set_layer(next_layer_idx);
@@ -217,8 +217,6 @@
 
             function init_map () {
                 map = L.map('map', {
-                    center: [51.7, 5.5],
-                    zoom: 7,
                     minZoom: 7,
                     maxZoom: 12,
                     maxBounds: [
@@ -228,9 +226,33 @@
                     attributionControl: false,
                     zoomControl: false
                 });
-                
+
+                map.fitBounds([
+                    [53.81362579235235, 7.569580078124999],
+                    [50.085344397538876, 3.40576171875]
+                    ]);
+
                 oldLayer.addTo(map);
                 current_layer_idx = 0;
+
+                if (window.innerHeight > 800) {
+                    console.log("big 'ol screen zooming in");
+                    map.setZoom(8);
+                }
+
+/*                map.on('zoomstart', onZoomstart);
+
+                function onZoomstart () {
+                    if (is_running()) {
+                        stop();
+                        map.on('zoomend', onZoomend);
+                    }
+                }
+
+                function onZoomend () {
+                    start();
+                    map.removeEventListener('zoomend');
+                }*/
 
                 map.on('zoom', function (e) {
                     if (map.getZoom() > 7) {
@@ -261,7 +283,9 @@
                 if (layer_datetime !== undefined) {
                     console.log(layer_datetime);
                     minute = parseInt(layer_datetime.slice(14,16));
+                    console.debug("Settings minutes: " + minute);
                     hour = parseInt(layer_datetime.slice(11,13)) + 1 + minute / 60; //Convert to local time WARNING: change this line atleast once every season! Cowboy programming by reuring
+                    console.debug("Settings hours: " + hour);
                 }
                 else {
                     minute = 0;
@@ -278,29 +302,29 @@
                 ];
                 };
 
-                width = 163;
-                height = 163;
-                offSetX = 81;
-                offSetY = 81;
+                width = 90;
+                height = 90;
+                offSetX = 45;
+                offSetY = 45;
                 pi = Math.PI;
                 
                 scaleMins = d3.scale.linear().domain([0, 59 + 59 / 60]).range([0, 2 * pi]);
                 scaleHours = d3.scale.linear().domain([0, 11 + 59 / 60]).range([0, 2 * pi]);
                 vis = d3.selectAll(".chart").append("svg:svg").attr("width", width).attr("height", height);
                 clockGroup = vis.append("svg:g").attr("transform", "translate(" + offSetX + "," + offSetY + ")");
-                clockGroup.append("svg:circle").attr("r", 80).attr("fill", "none").attr("class", "clock outercircle").attr("stroke", "lightgray").attr("stroke-width", 2);
-                clockGroup.append("svg:circle").attr("r", 4).attr("fill", "lightgray").attr("class", "clock innercircle");
+                clockGroup.append("svg:circle").attr("r", 40).attr("fill", "none").attr("class", "clock outercircle").attr("opacity", "0.6").attr("stroke", "black").attr("stroke-width", 4);
+                clockGroup.append("svg:circle").attr("r", 3).attr("fill", "black").attr("class", "clock innercircle").attr("opacity", "0.6");
 
             initRender = function(data) {
                 var hourArc, minuteArc;
                 
-                minuteArc = d3.svg.arc().innerRadius(0).outerRadius(70).startAngle(function(d) {
+                minuteArc = d3.svg.arc().innerRadius(0).outerRadius(35).startAngle(function(d) {
                   return scaleMins(d.numeric);
                 }).endAngle(function(d) {
                   return scaleMins(d.numeric);
                 });
 
-                hourArc = d3.svg.arc().innerRadius(0).outerRadius(50).startAngle(function(d) {
+                hourArc = d3.svg.arc().innerRadius(0).outerRadius(25).startAngle(function(d) {
                   return scaleHours(d.numeric % 12);
                 }).endAngle(function(d) {
                   return scaleHours(d.numeric % 12);
@@ -312,14 +336,14 @@
                   } else if (d.unit === "hours") {
                     return hourArc(d);
                   }
-                }).attr("class", "clockhand").attr("stroke", "lightgray")
+                }).attr("class", "clockhand").attr("opacity", "0.6").attr("stroke", "black")
                 .attr("stroke-width", function(d) {
                   if (d.unit === "seconds") {
                     return 2;
                   } else if (d.unit === "minutes") {
-                    return 1;
+                    return 3;
                   } else if (d.unit === "hours") {
-                    return 2;
+                    return 5;
                   }
                 }).attr("fill", "none");
             };
@@ -328,20 +352,20 @@
                 console.debug("Changing clock");
                 var hourArc, minuteArc;
 
-                minuteArc = d3.svg.arc().innerRadius(0).outerRadius(70).startAngle(function(d) {
+                minuteArc = d3.svg.arc().innerRadius(0).outerRadius(35).startAngle(function(d) {
                   return scaleMins(d.numeric);
                 }).endAngle(function(d) {
                   return scaleMins(d.numeric);
                 });
 
-                hourArc = d3.svg.arc().innerRadius(0).outerRadius(50).startAngle(function(d) {
+                hourArc = d3.svg.arc().innerRadius(0).outerRadius(25).startAngle(function(d) {
                   return scaleHours(d.numeric % 12);
                 }).endAngle(function(d) {
                   return scaleHours(d.numeric % 12);
                 });
 
                 return clockGroup.selectAll(".clockhand")
-                    .data(data).transition().duration("150").ease("elastic", 1, 0.8)
+                    .data(data).transition().duration(interval_ms.toString()).ease("linear", 1, 0.8)
                     .attr("d", function(d) {
                         if (d.unit === "minutes") {
                             return minuteArc(d);
@@ -360,8 +384,16 @@
             var changeClock = function(layer_datetime) {
                 var data;
                 data = fields(layer_datetime);
+                moveClock();
                 return render(data);
             };
+
+            function moveClock () {
+                var clock = document.getElementById("clock");
+                var max_width = window.innerWidth;
+                var left = 0.02 * max_width + current_layer_idx/radarImages.length * (0.98 * max_width);
+                clock.style.left = left.toString() + "px";
+            }
             // End clock
 
             function init_neerslagradar () {
@@ -372,6 +404,7 @@
                 //wait_until_first_layer_loaded();
                 //start_when_all_layers_are_loaded();
                 start();
+
                 }
 
             init_neerslagradar();
