@@ -45,9 +45,12 @@
 
 .chart {
 	position: absolute;
-	top: 0px;
+	bottom: 20%;
 	margin: 2%;
 	z-index: 9999;
+  transition: 0.25s;
+  -webkit-transition: 0.25s;
+
 }
 
 #tool-tip {
