@@ -67,23 +67,24 @@
             var interval_ms = 300;
             var cycle_layers_interval = null;
             var current_layer_idx = -1;
+            var radarLayer = undefined;
             var oldLayer = undefined;
             //var define = 0;
 
             function set_layer (layer_idx) {
                 var imageUrl = radarImages[layer_idx];
-                var newLayer = L.imageOverlay(imageUrl, imageBounds, {zIndex: 9999, opacity: 0.6});
                 if (current_layer_idx != layer_idx) {
                     // swap out layers
                     console.log("add to map: " + layer_idx);
-                    newLayer.addTo(map);
+                    radarLayer.setUrl(imageUrl);
+                    //radarLayer.redraw();
                     
-                    if (oldLayer !== undefined) {
+/*                    if (oldLayer !== undefined) {
                         console.log("remove from map: " + current_layer_idx);
                         map.removeLayer(oldLayer);
                         delete window.oldLayer;
-                    }
-                    oldLayer = newLayer;
+                    }*/
+                    //oldLayer = newLayer;
                     current_layer_idx = layer_idx;
                     //changeClock(next_layer_datetime);
                 }
@@ -224,6 +225,10 @@
                     zoomControl: false
                 });
                 
+                var initialImageUrl = radarImages[0];
+                radarLayer = L.imageOverlay(initialImageUrl, imageBounds, {zIndex: 9999, opacity: 0.6});
+                radarLayer.addTo(map);
+
                 map.on('zoom', function (e) {
                     if (map.getZoom() > 7) {
                         map.setMaxBounds([
