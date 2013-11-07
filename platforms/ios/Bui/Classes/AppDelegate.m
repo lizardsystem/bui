@@ -63,6 +63,9 @@
  */
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
+//    [NSClassFromString(@"WebView") _enableRemoteInspector];
+    
+
     CGRect screenBounds = [[UIScreen mainScreen] bounds];
 
 #if __has_feature(objc_arc)
