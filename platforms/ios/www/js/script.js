@@ -15,7 +15,38 @@
         }
 
         function init () {
-            document.addEventListener("deviceready", whichImagesAreWeTalking(), false);
+            if (window.cordova) {
+                console.debug("Running as cordova application.\nWMS is loaded from the filesystem.\n");
+                document.addEventListener("deviceready", whichImagesAreWeTalking(), false);
+            }
+            else {
+                console.debug("Running as web application.\nWMS is loaded from original wms source on the fly.\nCordova plugins behave unexpectedly, for debugging purposes only!\n");
+                document.addEventListener("DOMContentLoaded", buildRadarURLs());
+            }
+        }
+
+        function buildRadarURLs() {
+            // Build datetime objects to retrieve wms layers later on.
+            var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=';
+            var hours = 3 * 60;
+            var radarImagesURLs = [];
+            var now = moment();
+            console.debug("Now = ", now.format('YYYY-MM-DDTHH:mm:ss'));
+            
+            // The wms only accepts requests for every 5th minute exact
+            now.minutes((Math.round(now.minutes()/5) * 5) % 60);
+            now.seconds(0);
+            console.debug("Now rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
+
+            for (var interval = 5; interval < hours; interval = interval + 5) {
+                var animationDatetime =  now.subtract('minutes', 5);
+                var UtsieAniDatetime = moment.utc(animationDatetime);
+                radarImagesURLs.push(imageUrlBase + UtsieAniDatetime.format('YYYY-MM-DDTHH:mm:ss') + '.000Z');
+                }
+
+            radarImagesURLs.reverse();
+            console.debug(radarImagesURLs.length);
+            roll(radarImagesURLs);
         }
 
         function whichImagesAreWeTalking() {
@@ -24,9 +55,7 @@
             function success(entries) {
                 console.log("This is how many entries we have: " + entries.length);
                 for (var i=0; i < entries.length; i++) {
-                    console.log(entries[i].name);
                     radarImages.push(entries[i].toURL());
-                    console.log("Radar images: " + radarImages);
                 }
                 radarImages.sort();
                 roll(radarImages);
@@ -64,42 +93,48 @@
             var map = null;
             var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
             console.log(radarImages);
-            var interval_ms = 300;
+            var interval_ms = 1250;
             var cycle_layers_interval = null;
             var current_layer_idx = -1;
-            var oldLayer = undefined;
+            var initialImageUrl = radarImages[0];
+            var oldLayer = L.imageOverlay(initialImageUrl, imageBounds, {zIndex: 9999, opacity: 0.6});
+            var newRadarImage = undefined;
             //var define = 0;
 
             function set_layer (layer_idx) {
                 var imageUrl = radarImages[layer_idx];
-                var newLayer = L.imageOverlay(imageUrl, imageBounds, {zIndex: 9999, opacity: 0.6});
-                if (current_layer_idx != layer_idx) {
-                    // swap out layers
-                    console.log("add to map: " + layer_idx);
-                    newLayer.addTo(map);
-                    
-                    if (oldLayer !== undefined) {
-                        console.log("remove from map: " + current_layer_idx);
-                        map.removeLayer(oldLayer);
-                        delete window.oldLayer;
+                newRadarImage = L.imageOverlay(imageUrl, imageBounds, {zIndex: 9999, opacity: 0});
+                console.log("Adding new layer");
+                newRadarImage.on('load', removePreviousLayers);
+                newRadarImage.addTo(map);
+                current_layer_idx = layer_idx;
+                changeClock(imageUrl.slice(-24, -5));
+            }
+
+            function removePreviousLayers (e) {
+                console.log(map._layers);
+                console.log("Thou shall removeth the old layer!", e);
+                newRadarImage.setOpacity(0.6);
+                for (var i in map._layers) {
+                    if (map._layers[i] !== e.target && map._layers[i]._url !== "tiles/{z}/{x}/{y}.png") {
+                        console.debug("removing: ", map._layers[i]);
+                        map.removeLayer(map._layers[i]);
                     }
-                    oldLayer = newLayer;
-                    current_layer_idx = layer_idx;
-                    //changeClock(next_layer_datetime);
                 }
             }
+                    
 
             function cycle_layers () {
                 console.debug(current_layer_idx + " " + radarImages.length);
                 var next_layer_idx = current_layer_idx === radarImages.length -1 ? 0 : current_layer_idx + 1;
                 console.debug(next_layer_idx);
                 if (next_layer_idx === 0) {
-                    setTimeout(set_layer(0), 1000);
+                    //window.setTimeout(console.log("waiting 1000 ms"), 1000);
                     set_layer(next_layer_idx);
                 }
                 else {
                     set_layer(next_layer_idx);
-                    }
+                }
             }
 
             function init_slider () {
@@ -112,6 +147,7 @@
                 var slider = document.getElementById("slider");
                 var hammertime = Hammer(slider);
                 var previous_drag = 0;
+
                 hammertime.on("drag", function(ev) {
                     ev.gesture.preventDefault();
                     console.debug(ev.gesture.deltaX);
@@ -179,38 +215,8 @@
                 }
             }
 
-            function wait_until_first_layer_loaded () {
-                var wait_interval;
-                var tick = function () {
-                    if (layers[0] && layers[0].ol_layer && !layers[0].ol_layer.loading) {
-                        //set clock
-                        initClock(layers[0]);
-                        set_layer(0);
-                        // stop self
-                        clearInterval(wait_interval);
-                    }
-                };
-                wait_interval = setInterval(tick, 200);
-            }
-
-            function start_when_all_layers_are_loaded () {
-                var wait_interval;
-                var tick = function () {
-                    if (layers_loading === 0) {
-                        start();
-                        // stop self
-                        clearInterval(wait_interval);
-                    }
-                };
-                wait_interval = setInterval(tick, 100);
-            }
-
-
-            function on_layer_loading_change () {
-                // update clock
-            }
-
             function init_map () {
+                navigator.splashscreen.hide();
                 map = L.map('map', {
                     center: [51.7, 5.5],
                     zoom: 7,
@@ -224,6 +230,9 @@
                     zoomControl: false
                 });
                 
+                oldLayer.addTo(map);
+                current_layer_idx = 0;
+
                 map.on('zoom', function (e) {
                     if (map.getZoom() > 7) {
                         map.setMaxBounds([
@@ -359,7 +368,7 @@
             function init_neerslagradar () {
                 init_map();
                 init_slider();
-                //initClock(animationDatetimes[0]);
+                initClock(initialImageUrl.slice(-24, -5));
                 //init_cycle_layers();
                 //wait_until_first_layer_loaded();
                 //start_when_all_layers_are_loaded();
