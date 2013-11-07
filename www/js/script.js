@@ -147,6 +147,7 @@
                 var slider = document.getElementById("slider");
                 var hammertime = Hammer(slider);
                 var previous_drag = 0;
+
                 hammertime.on("drag", function(ev) {
                     ev.gesture.preventDefault();
                     console.debug(ev.gesture.deltaX);
@@ -201,10 +202,6 @@
                 cycle_layers_interval = null;
             }
 
-            function is_running () {
-                return cycle_layers_interval !== null;
-            }
-
             function toggle () {
                 if (is_running()) {
                     stop();
@@ -212,37 +209,6 @@
                 else {
                     start();
                 }
-            }
-
-            function wait_until_first_layer_loaded () {
-                var wait_interval;
-                var tick = function () {
-                    if (layers[0] && layers[0].ol_layer && !layers[0].ol_layer.loading) {
-                        //set clock
-                        initClock(layers[0]);
-                        set_layer(0);
-                        // stop self
-                        clearInterval(wait_interval);
-                    }
-                };
-                wait_interval = setInterval(tick, 200);
-            }
-
-            function start_when_all_layers_are_loaded () {
-                var wait_interval;
-                var tick = function () {
-                    if (layers_loading === 0) {
-                        start();
-                        // stop self
-                        clearInterval(wait_interval);
-                    }
-                };
-                wait_interval = setInterval(tick, 100);
-            }
-
-
-            function on_layer_loading_change () {
-                // update clock
             }
 
             function init_map () {
