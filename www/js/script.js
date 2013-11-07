@@ -59,6 +59,7 @@
                 }
                 radarImages.sort();
                 roll(radarImages);
+                navigator.splashscreen.hide()
             }
 
             function fail(error) {
@@ -240,19 +241,18 @@
                     map.setZoom(8);
                 }
 
-/*                map.on('zoomstart', onZoomstart);
+                map.on('zoomstart', onZoomstart);
 
                 function onZoomstart () {
                     if (is_running()) {
                         stop();
-                        map.on('zoomend', onZoomend);
+                        addOneTimeEventListener('zoomend', onZoomend);
                     }
                 }
 
                 function onZoomend () {
                     start();
-                    map.removeEventListener('zoomend');
-                }*/
+                }
 
                 map.on('zoom', function (e) {
                     if (map.getZoom() > 7) {
@@ -282,9 +282,11 @@
                 var data, hour, minute, second;
                 if (layer_datetime !== undefined) {
                     console.log(layer_datetime);
-                    minute = parseInt(layer_datetime.slice(14,16));
+                    var minuteStr = layer_datetime.slice(14,16);
+                    console.debug(minuteStr);
+                    minute = Number(minuteStr);
                     console.debug("Settings minutes: " + minute);
-                    hour = parseInt(layer_datetime.slice(11,13)) + 1 + minute / 60; //Convert to local time WARNING: change this line atleast once every season! Cowboy programming by reuring
+                    hour = Number(layer_datetime.slice(11,13)) + 1 + minute / 60; //Convert to local time WARNING: change this line atleast once every season! Cowboy programming by reuring
                     console.debug("Settings hours: " + hour);
                 }
                 else {

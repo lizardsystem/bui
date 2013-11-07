@@ -27,7 +27,7 @@ function init(){
 }
 
 function onDeviceReady (animationDatetimes) {
-
+    navigator.splashscreen.show();
     var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=';
 
     window.radarImages = [];
