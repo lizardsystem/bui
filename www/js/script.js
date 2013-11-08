@@ -58,6 +58,7 @@
                     radarImages.push(entries[i].toURL());
                 }
                 radarImages.sort();
+                navigator.splashscreen.hide();
                 roll(radarImages);
             }
 
@@ -108,7 +109,7 @@
                 newRadarImage.on('load', removePreviousLayers);
                 newRadarImage.addTo(map);
                 current_layer_idx = layer_idx;
-                changeClock(imageUrl.slice(-24, -5));
+                changeClock(imageUrl.slice(-28, -9));
             }
 
             function removePreviousLayers (e) {
@@ -169,7 +170,7 @@
                     previous_drag = 0;
                     ev.stopPropagation();
                 });
-
+                
                 hammertime.on("tap", function(ev) {
                     ev.gesture.preventDefault();
                     
@@ -216,7 +217,6 @@
             }
 
             function init_map () {
-                navigator.splashscreen.hide();
                 map = L.map('map', {
                     minZoom: 7,
                     maxZoom: 12,
@@ -241,19 +241,18 @@
                     map.setZoom(8);
                 }
 
-/*                map.on('zoomstart', onZoomstart);
+                map.on('zoomstart', onZoomstart);
 
                 function onZoomstart () {
                     if (is_running()) {
                         stop();
-                        map.on('zoomend', onZoomend);
+                        addOneTimeEventListener('zoomend', onZoomend);
                     }
                 }
 
                 function onZoomend () {
                     start();
-                    map.removeEventListener('zoomend');
-                }*/
+                }
 
                 map.on('zoom', function (e) {
                     if (map.getZoom() > 7) {
@@ -283,9 +282,11 @@
                 var data, hour, minute, second;
                 if (layer_datetime !== undefined) {
                     console.log(layer_datetime);
-                    minute = parseInt(layer_datetime.slice(14,16));
+                    var minuteStr = layer_datetime.slice(14,16);
+                    console.debug(minuteStr);
+                    minute = Number(minuteStr);
                     console.debug("Settings minutes: " + minute);
-                    hour = parseInt(layer_datetime.slice(11,13)) + 1 + minute / 60; //Convert to local time WARNING: change this line atleast once every season! Cowboy programming by reuring
+                    hour = Number(layer_datetime.slice(11,13)) + 1 + minute / 60; //Convert to local time WARNING: change this line atleast once every season! Cowboy programming by reuring
                     console.debug("Settings hours: " + hour);
                 }
                 else {
@@ -400,7 +401,7 @@
             function init_neerslagradar () {
                 init_map();
                 init_slider();
-                initClock(initialImageUrl.slice(-24, -5));
+                initClock(initialImageUrl.slice(-28, -9));
                 //init_cycle_layers();
                 //wait_until_first_layer_loaded();
                 //start_when_all_layers_are_loaded();
