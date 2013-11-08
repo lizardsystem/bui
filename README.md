@@ -62,3 +62,12 @@ $ cordova build ios
 ```
 
 - Open the .xcodeproj in XCode (located in ./platforms/ios/) and build/test/analyze/run/deploy from there.
+
+
+
+
+
+Building for Android
+--------------------
+
+TODO
