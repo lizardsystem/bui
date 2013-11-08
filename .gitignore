@@ -24,3 +24,7 @@ Pods
 */android/bin/
 */android/gen/
 */android/assets/
+
+merges/
+platforms/
+plugins/
