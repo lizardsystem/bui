@@ -103,16 +103,6 @@ $ cordova build ios
 
 - Open the .xcodeproj in XCode (located in ./platforms/ios/) and build/test/analyze/run/deploy from there.
 
-<<<<<<< HEAD
-=======
-
 - To add the custom icons/splashscreens, open XCode.
 - Press CTRL-SHIFT-K to clean the product, then build and wait.
 
-
-
-Building for Android
---------------------
-
-TODO
->>>>>>> f18be71922154cf9977a77686f11a4b8f812a74f
