@@ -10,14 +10,21 @@
         // onError Callback receives a PositionError object
         //
         function onError(error) {
-            alert('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
+            console.error("Geolocating went wrong");
+
+            //alert('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
             return true; // fail silently...
+        }
+
+        function onBackClickEvent () {
+            navigator.app.exitApp();
         }
 
         function init () {
             if (window.cordova) {
                 console.debug("Running as cordova application.\nWMS is loaded from the filesystem.\n");
-                document.addEventListener("deviceready", whichImagesAreWeTalking(), false);
+                document.addEventListener("deviceready", whichImagesAreWeTalking, false);
+                document.addEventListener("backbutton", onBackClickEvent, false);
             }
             else {
                 console.debug("Running as web application.\nWMS is loaded from original wms source on the fly.\nCordova plugins behave unexpectedly, for debugging purposes only!\n");
@@ -94,7 +101,7 @@
             var map = null;
             var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
             console.log(radarImages);
-            var interval_ms = 250;
+            var interval_ms = 150;
             var cycle_layers_interval = null;
             var current_layer_idx = -1;
             var initialImageUrl = radarImages[0];
@@ -128,6 +135,7 @@
             function cycle_layers () {
                 console.debug(current_layer_idx + " " + radarImages.length);
                 var next_layer_idx = current_layer_idx === radarImages.length -1 ? 0 : current_layer_idx + 1;
+                changeClock(radarImages[next_layer_idx].slice(-28, -9));
                 console.debug(next_layer_idx);
                 if (next_layer_idx === 0) {
                     console.log("Waiting " + 5 * interval_ms + "ms");
@@ -152,12 +160,12 @@
                 hammertime.on("drag", function(ev) {
                     ev.gesture.preventDefault();
                     console.debug(ev.gesture.deltaX);
-                    // Check direction and move every fifth pixel
-                    if (ev.gesture.deltaX > (previous_drag+5) && current_layer_idx < radarImages.length-1) {
+                    // Check direction and move every tenth pixel
+                    if (ev.gesture.deltaX > (previous_drag+10) && current_layer_idx < radarImages.length-1) {
                         cycle_layers();
                         previous_drag = ev.gesture.deltaX;
                     }
-                    if (ev.gesture.deltaX < (previous_drag-5) && current_layer_idx > 0) {
+                    if (ev.gesture.deltaX < (previous_drag-10) && current_layer_idx > 0) {
                         slideLayerBackwards();
                         previous_drag = ev.gesture.deltaX;
                     }
@@ -170,7 +178,7 @@
                     previous_drag = 0;
                     ev.stopPropagation();
                 });
-                
+
                 hammertime.on("tap", function(ev) {
                     ev.gesture.preventDefault();
                     
@@ -180,14 +188,20 @@
                 });
 
                 hammertime.on("hold", function (ev) {
+                    console.debug("Holding on");
                     if (has_hold) {
 
-                    map.setView([51.7, 5.5], 7, {
-                        animate: true
-                    });
+                        map.setView([51.7, 5.5], 7, {
+                            animate: true
+                        });
                         has_hold = false;
+                        if (window.innerHeight > 800) {
+                            console.log("big 'ol screen zooming in");
+                            map.ZoomIn(1);
+                        }
                     }
                     else if (!has_hold) {
+                        console.debug("Geolocating");
                         navigator.geolocation.getCurrentPosition(onSuccess, onError);
                         has_hold = true;
                     }
@@ -236,17 +250,12 @@
                 oldLayer.addTo(map);
                 current_layer_idx = 0;
 
-                if (window.innerHeight > 800) {
-                    console.log("big 'ol screen zooming in");
-                    map.setZoom(8);
-                }
-
                 map.on('zoomstart', onZoomstart);
 
                 function onZoomstart () {
                     if (is_running()) {
                         stop();
-                        addOneTimeEventListener('zoomend', onZoomend);
+                        map.addOneTimeEventListener('zoomend', onZoomend);
                     }
                 }
 
@@ -270,6 +279,11 @@
                 });
 
                 L.tileLayer('tiles/{z}/{x}/{y}.png').addTo(map);
+
+                if (window.innerHeight > 800) {
+                    console.log("big 'ol screen zooming in");
+                    map.zoomIn(1);
+                }
 
                 window.map = map;
             };
@@ -314,8 +328,8 @@
                 scaleHours = d3.scale.linear().domain([0, 11 + 59 / 60]).range([0, 2 * pi]);
                 vis = d3.selectAll(".chart").append("svg:svg").attr("width", width).attr("height", height);
                 clockGroup = vis.append("svg:g").attr("transform", "translate(" + offSetX + "," + offSetY + ")");
-                clockGroup.append("svg:circle").attr("r", 40).attr("fill", "none").attr("class", "clock outercircle").attr("opacity", "0.6").attr("stroke", "black").attr("stroke-width", 4);
-                clockGroup.append("svg:circle").attr("r", 3).attr("fill", "black").attr("class", "clock innercircle").attr("opacity", "0.6");
+                clockGroup.append("svg:circle").attr("r", 40).attr("fill", "none").attr("class", "clock outercircle").attr("opacity", "1").attr("stroke", "white").attr("stroke-width", 4);
+                clockGroup.append("svg:circle").attr("r", 3).attr("fill", "white").attr("class", "clock innercircle").attr("opacity", "1");
 
             initRender = function(data) {
                 var hourArc, minuteArc;
@@ -338,7 +352,7 @@
                   } else if (d.unit === "hours") {
                     return hourArc(d);
                   }
-                }).attr("class", "clockhand").attr("opacity", "0.6").attr("stroke", "black")
+                }).attr("class", "clockhand").attr("opacity", "1").attr("stroke", "white").attr("stroke-linecap", "round")
                 .attr("stroke-width", function(d) {
                   if (d.unit === "seconds") {
                     return 2;
@@ -374,7 +388,7 @@
                         } else if (d.unit === "hours") {
                             return hourArc(d);
                         }
-                });
+                }).attr("stroke-linecap", "round");
             };
 
             var initClock = function(layer_datetime) {
@@ -392,8 +406,8 @@
 
             function moveClock () {
                 var clock = document.getElementById("clock");
-                var max_width = window.innerWidth;
-                var left = 0.02 * max_width + current_layer_idx/radarImages.length * (0.98 * max_width);
+                var max_width = window.innerWidth - 90;
+                var left = current_layer_idx/radarImages.length * (0.98 * max_width);
                 clock.style.left = left.toString() + "px";
             }
             // End clock
