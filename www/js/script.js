@@ -58,8 +58,8 @@
                     radarImages.push(entries[i].toURL());
                 }
                 radarImages.sort();
+                navigator.splashscreen.hide();
                 roll(radarImages);
-                navigator.splashscreen.hide()
             }
 
             function fail(error) {
@@ -109,7 +109,7 @@
                 newRadarImage.on('load', removePreviousLayers);
                 newRadarImage.addTo(map);
                 current_layer_idx = layer_idx;
-                changeClock(imageUrl.slice(-24, -5));
+                changeClock(imageUrl.slice(-28, -9));
             }
 
             function removePreviousLayers (e) {
@@ -170,7 +170,7 @@
                     previous_drag = 0;
                     ev.stopPropagation();
                 });
-
+                
                 hammertime.on("tap", function(ev) {
                     ev.gesture.preventDefault();
                     
@@ -217,7 +217,6 @@
             }
 
             function init_map () {
-                navigator.splashscreen.hide();
                 map = L.map('map', {
                     minZoom: 7,
                     maxZoom: 12,
@@ -402,7 +401,7 @@
             function init_neerslagradar () {
                 init_map();
                 init_slider();
-                initClock(initialImageUrl.slice(-24, -5));
+                initClock(initialImageUrl.slice(-28, -9));
                 //init_cycle_layers();
                 //wait_until_first_layer_loaded();
                 //start_when_all_layers_are_loaded();
