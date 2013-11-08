@@ -27,3 +27,36 @@ $ cordova [run/build] [platform]
  - When you want to test in XCode or Eclipse, run 'cordova run ios/android' again.
  - In platforms/ios/, there's a file Bui.xcodeproj which you can open in XCode and build/test/debug.
  - **Don't edit code in XCode** because it'll get overwritten.
+
+
+
+
+Building for iOS
+----------------
+
+ - Add a platforms directory is absent:
+
+```
+$ mkdir platforms
+```
+
+ - Install Phonegap plugins:
+
+```
+$ cordova plugin add org.apache.cordova.file
+$ cordova plugin add org.apache.cordova.file-transfer
+$ cordova plugin add org.apache.cordova.geolocation
+$ cordova plugin add org.apache.cordova.splashscreen
+```
+
+ - Add iOS platform:
+```
+$ cordova platform add ios
+```
+
+ - Build Cordova package
+```
+$ cordova build ios
+```
+
+ - Open the .xcodeproj in XCode (located in ./platforms/ios/) and build/test/analyze/run/deploy from there.
