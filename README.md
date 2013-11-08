@@ -34,7 +34,7 @@ $ cordova [run/build] [platform]
 Building for iOS
 ----------------
 
- - Add a platforms directory is absent:
+ - Add a platforms directory if absent:
 
 ```
 $ mkdir platforms
