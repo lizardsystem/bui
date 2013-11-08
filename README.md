@@ -50,13 +50,15 @@ $ cordova plugin add org.apache.cordova.splashscreen
 ```
 
  - Add iOS platform:
+
 ```
 $ cordova platform add ios
 ```
 
- - Build Cordova package
+ - Build Cordova package:
+
 ```
 $ cordova build ios
 ```
 
- - Open the .xcodeproj in XCode (located in ./platforms/ios/) and build/test/analyze/run/deploy from there.
+- Open the .xcodeproj in XCode (located in ./platforms/ios/) and build/test/analyze/run/deploy from there.
