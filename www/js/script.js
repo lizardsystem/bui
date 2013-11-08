@@ -197,7 +197,7 @@
                         has_hold = false;
                         if (window.innerHeight > 800) {
                             console.log("big 'ol screen zooming in");
-                            map.ZoomIn(1);
+                            map.zfoomIn(1);
                         }
                     }
                     else if (!has_hold) {
