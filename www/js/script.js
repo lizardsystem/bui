@@ -426,3 +426,5 @@
             init_neerslagradar();
 
             }
+
+window.onload = init();

@@ -20,11 +20,5 @@ DerivedData
 #CocoaPods
 Pods
 
-# AndroidSDK
-*/android/bin/
-*/android/gen/
-*/android/assets/
-
-merges/
 platforms/
 plugins/
