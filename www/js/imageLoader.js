@@ -22,9 +22,6 @@ function buildAnimationDatetimes () {
 }
 
 function init(){
-    setTimeout(function() {
-        // navigator.splashscreen.hide();
-    }, 2000);
     var animationDatetimes = buildAnimationDatetimes();
     document.addEventListener("deviceready", onDeviceReady(animationDatetimes), false);
 }
@@ -33,7 +30,8 @@ function onDeviceReady (animationDatetimes) {
     navigator.splashscreen.show();
     var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=';
 
-    window.radarImages = [];
+    var radarImages = [];
+    var attempts = 0;
 
     gotFile = function (file) {
         console.debug("Got dummy file");
@@ -50,11 +48,11 @@ function onDeviceReady (animationDatetimes) {
             count++;
             lastOne = count === animationDatetimes.length ? true: false;
             console.log("COUNT: " + count + " of " + animationDatetimes.length);
-            window.radarImages.push(entry.toURL());
+            radarImages.push(entry.toURL());
             console.log("download complete: " + entry.toURL());
             if (lastOne) {
                 window.location='./main.html';
-                console.log("Start the show! \n" +  window.radarImages);
+                console.log("Start the show! \n" +  radarImages);
             }
         };
 
@@ -66,7 +64,7 @@ function onDeviceReady (animationDatetimes) {
             console.log("upload error code" + error.code);
             if (lastOne) {
                 window.location='./main.html';
-                console.log("Start the show! \n" +  window.radarImages);
+                console.log("Start the show! \n" +  radarImages);
             }
         };
 
@@ -95,29 +93,56 @@ function onDeviceReady (animationDatetimes) {
         createDirectory();
     };
 
+    var filesystem;
+
     gotFileSystem = function (fileSystem) {
         console.debug("Got Filesystem, removing old directory");
-        window.fileSystem = fileSystem;
+        fileSystemGlobal = fileSystem;
         fileSystem.root.getDirectory("bui", {create: false}, removeDirectory, createDirectory);
     };
 
     createDirectory = function () {
         console.debug("Creating new directory");
-        window.fileSystem.root.getDirectory("bui", {create: true, exclusive: false}, gotDirectory, onDirectoryError);
+        fileSystemGlobal.root.getDirectory("bui", {create: true, exclusive: false}, gotDirectory, onDirectoryError);
     };
 
     onFileSystemError = function (msg) {
-        console.error("No filesystem: ", msg);
+        console.error("No filesystem: " + msg);
+        attempts++;
+        getFileSystem();
     };
 
     onDirectoryError = function (msg) {
         console.error("Failed creating a directory");
+        attempts++;
+        getFileSystem();
     };
 
     onFileError = function (msg) {
-        console.error("No file: ", msg);
+        console.error("No file: " + msg);
+        attempts++;
+        getFileSystem();
     };
 
-    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onFileSystemError);
+
+    // if device.connection == good:
+    getFileSystem = function () {
+        if (attempts < 10) {
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onFileSystemError);    
+        }
+        else {
+            console.error("Tried 10 times, filesystem will not bend! All troops: retreat!");
+        }
+    };
     
+    var nw = navigator.connection.type;
+    if (nw === Connection.NONE) {
+        console.log("No internet, skipping download");
+        window.location='./main.html';
+        console.log("Start the show! \n" +  radarImages);
+    }
+    else {
+        attempts++;
+        getFileSystem();
+    }
 }

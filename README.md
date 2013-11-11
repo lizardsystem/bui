@@ -12,7 +12,7 @@ Repo for the 'Bui' app, which is an iOS/Android client for the Nationale Regenra
  - Get Phonegap running on your system.
 
  ```
- $ sudo npm install -g cordova
+ $ sudo npm install -g cordova@3.1.0-0.1.0
  ```
  - Clone this repo and cd into it
  
@@ -39,6 +39,8 @@ Building for android:
  $ cordova plugin add org.apache.cordova.file
  $ cordova plugin add org.apache.cordova.file-transfer
  $ cordova plugin add org.apache.cordova.geolocation
+ $ cordova plugin add org.apache.cordova.network-information
+
  ```
 
  - Add icons and splashscreens to platforms/android/res/<icons-folders>/<splash|icon>.png
@@ -53,6 +55,20 @@ Building for android:
  and in the same file, set exit on suspend to true:
  ```
  <preference name="exit-on-suspend" value="true" />
+ ```
+
+ - Make your android/src/com/nens/bui/Bui.java look like this:
+ ```
+ public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        super.setIntegerProperty("splashscreen", R.drawable.splash);
+        super.setIntegerProperty("splashScreenDelay", 10000); //time to display the splash
+        super.init();
+        // Set by <content src="index.html" /> in config.xml
+        super.loadUrl(Config.getStartUrl());
+        //super.loadUrl("file:///android_asset/www/index.html")
+    }
  ```
 
  - Add to platforms/android/AndroidManifest.xml:

@@ -235,31 +235,28 @@
                     minZoom: 7,
                     maxZoom: 12,
                     maxBounds: [
-                       [55, 9],
-                       [45, 0]
+                       [57, 10],
+                       [47, 0]
                        ],
                     attributionControl: false,
                     zoomControl: false
                 });
 
-                map.fitBounds([
-                    [53.81362579235235, 7.569580078124999],
-                    [50.085344397538876, 3.40576171875]
-                    ]);
+                map.setView([51.7, 5.3], 7, {animate: false});
 
                 oldLayer.addTo(map);
                 current_layer_idx = 0;
 
-                map.on('zoomstart', onZoomstart);
+                map.on('movestart', onMove);
 
-                function onZoomstart () {
+                function onMove () {
                     if (is_running()) {
                         stop();
-                        map.addOneTimeEventListener('zoomend', onZoomend);
+                        map.addOneTimeEventListener('moveend', onMoveend);
                     }
                 }
 
-                function onZoomend () {
+                function onMoveend () {
                     start();
                 }
 
@@ -273,16 +270,16 @@
                     else {
                         map.setMaxBounds([
                         [55, 9],
-                        [45, 0]
+                        [46, 0]
                         ]);
                     }
                 });
 
                 L.tileLayer('tiles/{z}/{x}/{y}.png').addTo(map);
 
-                if (window.innerHeight > 800) {
+                if (window.innerHeight > 900) {
                     console.log("big 'ol screen zooming in");
-                    map.zoomIn(1);
+                    map.zoomIn(1, {animate: false});
                 }
 
                 window.map = map;
@@ -416,9 +413,6 @@
                 init_map();
                 init_slider();
                 initClock(initialImageUrl.slice(-28, -9));
-                //init_cycle_layers();
-                //wait_until_first_layer_loaded();
-                //start_when_all_layers_are_loaded();
                 start();
 
                 }
