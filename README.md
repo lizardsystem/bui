@@ -103,8 +103,16 @@ Building for iOS
  ```
 
  - Open the .xcodeproj in XCode (located in ./platforms/ios/) and build/test/analyze/run/deploy from there.
+ 
  - To add the custom icons/splashscreens, open XCode.
- - Press CTRL-SHIFT-K to clean the product, then build and wait.
+ 	- Icons: copy them from the icons/icon/ios folder to platforms/ios/Bui/Resources/icons
+ 	- Splashscreens: copy them from the icons/screen/ios folder to platforms/ios/Bui/Resources/splash
+ 
+ - Press CTRL-SHIFT-K to clean the product.
+
+ - Verify that the images are set in XCode under the tab 'General' of the Bui target.
+
+ - Build, wait and verify.
 
 
 Development
