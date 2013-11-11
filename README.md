@@ -11,40 +11,37 @@ Development
  - For Android, install openjdk7 and follow the instructions on the [Phonegap docs](http://docs.phonegap.com/).
  - For iOS, install XCode.
  - Install [node.js](http://nodejs.org/) on your system.
+
  - Get Phonegap running on your system.
 
 ```
 $ sudo npm install -g cordova
 ```
- 
- - Clone this repo, cd into it and depending on your deployment target, run:
-
-```
-$ cordova [run/build] [platform]
-```
-
- - Add plugins
- 
-```
-$ cordova plugin add org.apache.cordova.splashscreen
-$ cordova plugin add org.apache.cordova.file
-$ cordova plugin add org.apache.cordova.file-transfer
-$ cordova plugin add org.apache.cordova.geolocation
-```
-
-Building for android:
----------------------
+ - Clone this repo and cd into it
  
  - Add a platforms directory if absent:
 
 ```
 $ mkdir platforms
 ```
+ 
+ - Depending on your deployment target:
+
+Building for android:
+---------------------
 
  - Add platform:
 
 ```
 $ cordova platform add android
+```
+
+ - Add plugins: 
+```
+$ cordova plugin add org.apache.cordova.splashscreen
+$ cordova plugin add org.apache.cordova.file
+$ cordova plugin add org.apache.cordova.file-transfer
+$ cordova plugin add org.apache.cordova.geolocation
 ```
 
  - Add icons and splashscreens to platforms/android/res/<icons-folders>/<splash|icon>.png
@@ -65,20 +62,8 @@ add to platforms/android/AndroidManifest.xml:
 ```
 
 
- - Develop in www/index.html and www/js etc.
- - When you want to test in XCode or Eclipse, run 'cordova run ios/android' again.
- - In platforms/ios/, there's a file Bui.xcodeproj which you can open in XCode and build/test/debug.
- - **Don't edit code in XCode** because it'll get overwritten.
-
-
 Building for iOS
 ----------------
-
- - Add a platforms directory if absent:
-
-```
-$ mkdir platforms
-```
 
  - Install Phonegap plugins:
 
@@ -102,7 +87,22 @@ $ cordova build ios
 ```
 
 - Open the .xcodeproj in XCode (located in ./platforms/ios/) and build/test/analyze/run/deploy from there.
-
 - To add the custom icons/splashscreens, open XCode.
 - Press CTRL-SHIFT-K to clean the product, then build and wait.
 
+ Development
+ -----------
+
+ - Develop in www/index.html and www/js etc.
+ - Setup a development server i.e.:
+```
+$ python -m SimpleHTTPServer
+```
+
+ - Navigate to localhost/www/main.html to see your changes in effect
+ - To test cordova specific functionality connect your phone and run:
+```
+$ cordova run android
+```
+
+Console output can be seen in eclipse or xcode. For convenience filter the messages on com.nens.bui
