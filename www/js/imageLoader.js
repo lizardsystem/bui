@@ -34,7 +34,7 @@ function onDeviceReady (animationDatetimes) {
 
     gotFile = function (file) {
         console.debug("Got dummy file");
-        var sPath = file.fullPath.replace("test.png","");
+        var sPath = file.fullPath.replace("dummy.png","");
         var fileTransfer = new FileTransfer();
 
         //encodeURI()
@@ -82,7 +82,7 @@ function onDeviceReady (animationDatetimes) {
 
     gotDirectory = function (directory) {
         console.debug("Got Directory, getting or creating a dummy file.");
-        directory.getFile("test.png", {create: true, exclusive: false}, gotFile, onFileError);
+        directory.getFile("dummy.png", {create: true, exclusive: false}, gotFile, onFileError);
     };
 
     removeDirectory = function (directory) {

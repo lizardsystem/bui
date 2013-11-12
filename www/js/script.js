@@ -1,21 +1,3 @@
-
-        // Callbacks to enable geolocation
-        var onSuccess = function(position) {
-            console.log(position);
-            map.setView([position.coords.latitude, position.coords.longitude], 11, {
-                animate: true
-            });
-        };
-
-        // onError Callback receives a PositionError object
-        //
-        function onError(error) {
-            console.error("Geolocating went wrong");
-
-            //alert('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
-            return true; // fail silently...
-        }
-
         function onBackClickEvent () {
             navigator.app.exitApp();
         }
@@ -55,6 +37,7 @@
 
         function whichImagesAreWeTalking() {
             var radarImages = [];
+            var attempts = 0;
 
             function success(entries) {
                 console.debug("This is how many entries we have: " + entries.length);
@@ -85,15 +68,28 @@
 
             onFileSystemError = function (msg) {
                 console.error("No filesystem: ", msg);
-                navigator.splashscreen.hide();
+                attempts++;
+                getFileSystem();
             };
 
             dirError = function (msg) {
                 console.error("Failed getting the directory");
-                navigator.splashscreen.hide();
+                attempts++;
+                getFileSystem();
             };
-
-            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onFileSystemError);
+            
+            getFileSystem = function () {
+                if (attempts < 10) {
+                    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onFileSystemError);
+                }
+                else {
+                    navigator.splashscreen.hide();
+                    roll(radarImages);
+                }
+            };
+            
+            attempts++;
+            getFileSystem();
         }
 
         function roll(radarImages) {
@@ -125,7 +121,6 @@
                 }
             }
                     
-
             function cycle_layers () {
                 var next_layer_idx = current_layer_idx === radarImages.length -1 ? 0 : current_layer_idx + 1;
                 changeClock(radarImages[next_layer_idx].slice(-28, -9));
@@ -136,6 +131,15 @@
                     set_layer(next_layer_idx);
                 }
             }
+
+            // onError Callback receives a PositionError object
+            //
+            function onError(error) {
+                console.error("Geolocating went wrong");
+                //alert('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
+                return true; // fail silently...
+            }
+
 
             function init_slider () {
                 var has_hold = false;
@@ -179,19 +183,23 @@
                 hammertime.on("hold", function (ev) {
                     console.debug("Holding on");
                     if (has_hold) {
-
-                        map.setView([51.7, 5.5], 7, {
-                            animate: true
-                        });
-                        has_hold = false;
-                        if (window.innerHeight > 800) {
+                        if (window.innerHeight > 900) {
                             console.debug("big 'ol screen zooming in");
-                            map.zfoomIn(1);
+                            map.setView([51.7, 5.3], 8, {animate: false});
                         }
+                        else {
+                            map.setView([51.7, 5.3], 7, {animate: false});
+                        }
+                        has_hold = false;
                     }
                     else if (!has_hold) {
                         console.debug("Geolocating");
-                        navigator.geolocation.getCurrentPosition(onSuccess, onError);
+                        navigator.geolocation.getCurrentPosition(function (position) {
+                            console.debug("position: " + position);
+                            map.setView([position.coords.latitude, position.coords.longitude], 11, {
+                            animate: true
+                            });
+                        }, onError);
                         has_hold = true;
                     }
                 });
@@ -222,14 +230,14 @@
             function init_map () {
                 map = L.map('map', {
                     minZoom: 7,
-                    maxZoom: 12,
+                    maxZoom: 11,
                     maxBounds: [
                        [57, 10],
                        [47, 0]
                        ],
                     attributionControl: false,
                     zoomControl: false
-                })
+                });
 
                 if (window.innerHeight > 900) {
                     console.debug("big 'ol screen zooming in");
