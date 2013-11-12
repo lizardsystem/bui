@@ -23,7 +23,7 @@
         function init () {
             if (window.cordova) {
                 console.debug("Running as cordova application.\nWMS is loaded from the filesystem.\n");
-                document.addEventListener("deviceready", whichImagesAreWeTalking, false);
+                document.addEventListener("deviceready", whichImagesAreWeTalking, true);
                 document.addEventListener("backbutton", onBackClickEvent, false);
             }
             else {
@@ -38,13 +38,11 @@
             var hours = 3 * 60;
             var radarImagesURLs = [];
             var now = moment();
-            console.debug("Now = ", now.format('YYYY-MM-DDTHH:mm:ss'));
-            
+                        
             // The wms only accepts requests for every 5th minute exact
             now.minutes((Math.round(now.minutes()/5) * 5) % 60);
             now.seconds(0);
-            console.debug("Now rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
-
+            
             for (var interval = 5; interval < hours; interval = interval + 5) {
                 var animationDatetime =  now.subtract('minutes', 5);
                 var UtsieAniDatetime = moment.utc(animationDatetime);
@@ -52,7 +50,6 @@
                 }
 
             radarImagesURLs.reverse();
-            console.debug(radarImagesURLs.length);
             roll(radarImagesURLs);
         }
 
@@ -60,7 +57,7 @@
             var radarImages = [];
 
             function success(entries) {
-                console.log("This is how many entries we have: " + entries.length);
+                console.debug("This is how many entries we have: " + entries.length);
                 for (var i=0; i < entries.length; i++) {
                     radarImages.push(entries[i].toURL());
                 }
@@ -88,10 +85,12 @@
 
             onFileSystemError = function (msg) {
                 console.error("No filesystem: ", msg);
+                navigator.splashscreen.hide();
             };
 
             dirError = function (msg) {
                 console.error("Failed getting the directory");
+                navigator.splashscreen.hide();
             };
 
             window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onFileSystemError);
@@ -100,7 +99,6 @@
         function roll(radarImages) {
             var map = null;
             var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
-            console.log(radarImages);
             var interval_ms = 150;
             var cycle_layers_interval = null;
             var current_layer_idx = -1;
@@ -112,7 +110,6 @@
             function set_layer (layer_idx) {
                 imageUrl = radarImages[layer_idx];
                 newRadarImage = L.imageOverlay(imageUrl, imageBounds, {zIndex: 9999, opacity: 0});
-                console.log("Adding new layer");
                 newRadarImage.on('load', removePreviousLayers);
                 newRadarImage.addTo(map);
                 current_layer_idx = layer_idx;
@@ -120,25 +117,19 @@
             }
 
             function removePreviousLayers (e) {
-                console.log("Current Layers: ", map._layers);
                 newRadarImage.setOpacity(0.8);
                 for (var i in map._layers) {
                     if (map._layers[i]._url !== imageUrl && map._layers[i]._url !== "tiles/{z}/{x}/{y}.png") {
-                        console.debug("removing: ", map._layers[i]);
                         map.removeLayer(map._layers[i]);
                     }
                 }
-                console.log("Remaining Layers: ", map._layers);
             }
                     
 
             function cycle_layers () {
-                console.debug(current_layer_idx + " " + radarImages.length);
                 var next_layer_idx = current_layer_idx === radarImages.length -1 ? 0 : current_layer_idx + 1;
                 changeClock(radarImages[next_layer_idx].slice(-28, -9));
-                console.debug(next_layer_idx);
                 if (next_layer_idx === 0) {
-                    console.log("Waiting " + 5 * interval_ms + "ms");
                     setTimeout(function () {set_layer(next_layer_idx)}, 5 * interval_ms);
                 }
                 else {
@@ -149,7 +140,6 @@
             function init_slider () {
                 var has_hold = false;
                 var slideLayerBackwards = function () {
-                    console.debug("Going one down: ", current_layer_idx);
                     set_layer(current_layer_idx - 1);
                 };
 
@@ -159,7 +149,6 @@
 
                 hammertime.on("drag", function(ev) {
                     ev.gesture.preventDefault();
-                    console.debug(ev.gesture.deltaX);
                     // Check direction and move every tenth pixel
                     if (ev.gesture.deltaX > (previous_drag+10) && current_layer_idx < radarImages.length-1) {
                         cycle_layers();
@@ -196,7 +185,7 @@
                         });
                         has_hold = false;
                         if (window.innerHeight > 800) {
-                            console.log("big 'ol screen zooming in");
+                            console.debug("big 'ol screen zooming in");
                             map.zfoomIn(1);
                         }
                     }
@@ -240,9 +229,15 @@
                        ],
                     attributionControl: false,
                     zoomControl: false
-                });
+                })
 
-                map.setView([51.7, 5.3], 7, {animate: false});
+                if (window.innerHeight > 900) {
+                    console.debug("big 'ol screen zooming in");
+                    map.setView([51.7, 5.3], 8, {animate: false});
+                }
+                else {
+                    map.setView([51.7, 5.3], 7, {animate: false});
+                }
 
                 oldLayer.addTo(map);
                 current_layer_idx = 0;
@@ -260,27 +255,7 @@
                     start();
                 }
 
-                map.on('zoom', function (e) {
-                    if (map.getZoom() > 7) {
-                        map.setMaxBounds([
-                        [53.8, 7.4],
-                        [49.7, 2.8]
-                        ]);
-                    }
-                    else {
-                        map.setMaxBounds([
-                        [55, 9],
-                        [46, 0]
-                        ]);
-                    }
-                });
-
                 L.tileLayer('tiles/{z}/{x}/{y}.png').addTo(map);
-
-                if (window.innerHeight > 900) {
-                    console.log("big 'ol screen zooming in");
-                    map.zoomIn(1, {animate: false});
-                }
 
                 window.map = map;
             };
@@ -292,13 +267,9 @@
             fields = function(layer_datetime) {
                 var data, hour, minute, second;
                 if (layer_datetime !== undefined) {
-                    console.log(layer_datetime);
                     var minuteStr = layer_datetime.slice(14,16);
-                    console.debug(minuteStr);
                     minute = Number(minuteStr);
-                    console.debug("Settings minutes: " + minute);
                     hour = Number(layer_datetime.slice(11,13)) + 1 + minute / 60; //Convert to local time WARNING: change this line atleast once every season! Cowboy programming by reuring
-                    console.debug("Settings hours: " + hour);
                 }
                 else {
                     minute = 0;
@@ -362,7 +333,6 @@
             };
 
             render = function (data) {
-                console.debug("Changing clock");
                 var hourArc, minuteArc;
 
                 minuteArc = d3.svg.arc().innerRadius(0).outerRadius(35).startAngle(function(d) {

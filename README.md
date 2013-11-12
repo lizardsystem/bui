@@ -63,7 +63,7 @@ Building for android:
     {
         super.onCreate(savedInstanceState);
         super.setIntegerProperty("splashscreen", R.drawable.splash);
-        super.setIntegerProperty("splashScreenDelay", 10000); //time to display the splash
+        super.setIntegerProperty("splashScreenDelay", 100000); //time to display the splash
         super.init();
         // Set by <content src="index.html" /> in config.xml
         super.loadUrl(Config.getStartUrl());

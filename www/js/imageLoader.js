@@ -3,7 +3,6 @@ function buildAnimationDatetimes () {
     var hours = 3 * 60;
     var animationDatetimes = [];
     var now = moment();
-    console.debug("Now = ", now.format('YYYY-MM-DDTHH:mm:ss'));
     
     // The wms only accepts requests for every 5th minute exact
     now.minutes((Math.round(now.minutes()/5) * 5) % 60);
@@ -28,16 +27,15 @@ function init(){
 
 function onDeviceReady (animationDatetimes) {
     navigator.splashscreen.show();
+
     var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=';
 
     var radarImages = [];
-    var attempts = 0;
 
     gotFile = function (file) {
         console.debug("Got dummy file");
         var sPath = file.fullPath.replace("test.png","");
         var fileTransfer = new FileTransfer();
-        console.log("Ready to download some files!");
 
         //encodeURI()
         var uri = imageUrlBase + animationDatetimes[0]; //2013-11-04T14%3A00%3A00.000Z
@@ -47,9 +45,9 @@ function onDeviceReady (animationDatetimes) {
         var succes = function(entry) {
             count++;
             lastOne = count === animationDatetimes.length ? true: false;
-            console.log("COUNT: " + count + " of " + animationDatetimes.length);
+            //console.log("COUNT: " + count + " of " + animationDatetimes.length);
             radarImages.push(entry.toURL());
-            console.log("download complete: " + entry.toURL());
+            //console.log("download complete: " + entry.toURL());
             if (lastOne) {
                 window.location='./main.html';
                 console.log("Start the show! \n" +  radarImages);
@@ -128,18 +126,35 @@ function onDeviceReady (animationDatetimes) {
     // if device.connection == good:
     getFileSystem = function () {
         if (attempts < 10) {
-            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onFileSystemError);    
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onFileSystemError);
         }
         else {
             console.error("Tried 10 times, filesystem will not bend! All troops: retreat!");
+            alert("Er gaat iets mis met het downloaden van de radarbeelden");
+            navigator.app.exitApp();
         }
     };
     
+    var attempts = 0;
+
     var nw = navigator.connection.type;
     if (nw === Connection.NONE) {
-        console.log("No internet, skipping download");
+        console.debug("No internet, skipping download");
+        alert("U bent niet verbonden met internet. het is daarom niet mogelijk (de nieuwste) radarbeelden te tonen");
         window.location='./main.html';
         console.log("Start the show! \n" +  radarImages);
+    }
+    if (nw === Connection.CELL_2G) {
+        console.debug("Slow internet, downloading only a few");
+        animationDatetimes = animationDatetimes.slice(0, 10);
+        attempts++;
+        getFileSystem();
+    }
+    if (nw === Connection.CELL_3G) {
+        console.debug("Medium slow internet, downloading only half");
+        animationDatetimes = animationDatetimes.slice(0, 20);
+        attempts++;
+        getFileSystem();
     }
     else {
         attempts++;
