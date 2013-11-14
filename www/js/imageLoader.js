@@ -20,7 +20,7 @@ function buildAnimationDatetimes () {
     return animationDatetimes;
 }
 
-function init(){
+function init () {
     var animationDatetimes = buildAnimationDatetimes();
     document.addEventListener("deviceready", onDeviceReady(animationDatetimes), false);
 }
@@ -144,13 +144,13 @@ function onDeviceReady (animationDatetimes) {
         window.location='./main.html';
         console.log("Start the show! \n" +  radarImages);
     }
-    if (nw === Connection.CELL_2G) {
+    else if (nw === Connection.CELL_2G) {
         console.debug("Slow internet, downloading only a few");
         animationDatetimes = animationDatetimes.slice(0, 10);
         attempts++;
         getFileSystem();
     }
-    if (nw === Connection.CELL_3G) {
+    else if (nw === Connection.CELL_3G) {
         console.debug("Medium slow internet, downloading only half");
         animationDatetimes = animationDatetimes.slice(0, 20);
         attempts++;

@@ -140,13 +140,12 @@
                 return true; // fail silently...
             }
 
+            slideLayerBackwards = function () {
+                set_layer(current_layer_idx - 1);
+            };
 
             function init_slider () {
                 var has_hold = false;
-                var slideLayerBackwards = function () {
-                    set_layer(current_layer_idx - 1);
-                };
-
                 var slider = document.getElementById("slider");
                 var hammertime = Hammer(slider);
                 var previous_drag = 0;
@@ -203,6 +202,59 @@
                         has_hold = true;
                     }
                 });
+            }
+            
+            //debug puposes
+            if (window.DeviceOrientationEvent) {
+                console.debug("DeviceOrientation is supported");
+            }
+            else {
+                console.debug("DeviceOrientation is not supported");
+            }
+
+            function orientationControl () {
+                console.debug("Instantiating deviceOrientation");
+                var time_steps = 0;
+                function onSuccess(acceleration) {
+                    time_steps++;
+                    var mv = acceleration.x;
+                    if (current_layer_idx < radarImages.length-1) {
+                        if (mv < -2) {
+                            cycle_layers();
+                            time_steps = 0;
+                        }
+                        if (mv < -1 && time_steps > 1) {
+                            cycle_layers();
+                            time_steps = 0;
+                        }
+                        if (mv < -0.5 && time_steps > 2) {
+                            cycle_layers();
+                            time_steps = 0;
+                        }
+                    }
+                    if (current_layer_idx > 0) {
+                        if (mv > 2) {
+                            slideLayerBackwards();
+                            time_steps = 0;
+                        }
+                        if (mv > 1 && time_steps > 2) {
+                            slideLayerBackwards();
+                            time_steps = 0;
+                        }
+                        if (mv > 0.5 && time_steps > 1) {
+                            slideLayerBackwards();
+                            time_steps = 0;
+                        }
+                    }
+                }
+
+                function onError() {
+                    alert('onError!');
+                }
+
+                var options = { frequency: interval_ms / 2 };  // Update often
+
+                var watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
             }
 
             function start () {
@@ -392,7 +444,7 @@
                 init_slider();
                 initClock(initialImageUrl.slice(-28, -9));
                 start();
-
+                orientationControl();
                 }
 
             init_neerslagradar();

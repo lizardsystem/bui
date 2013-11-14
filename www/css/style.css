@@ -3,11 +3,6 @@
     #map { width: 100%; height:100%; background-color: #44C1E9;}
 }
 
-.leaflet-layer {
-  opacity:0.75;
-  -webkit-filter: saturate(2);
-}
-
 .olControlZoom {
     display: none;
 }

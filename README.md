@@ -74,6 +74,7 @@ Building for android:
  - Add to platforms/android/AndroidManifest.xml:
  ```
  <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+ <manifest... android:screenOrientation="portrait" ...>
  ```
 
 
