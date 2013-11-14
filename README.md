@@ -40,7 +40,7 @@ Building for android:
  $ cordova plugin add org.apache.cordova.file-transfer
  $ cordova plugin add org.apache.cordova.geolocation
  $ cordova plugin add org.apache.cordova.network-information
-
+ $ cordova plugin add org.apache.cordova.device-motion
  ```
 
  - Add icons and splashscreens to platforms/android/res/<icons-folders>/<splash|icon>.png
@@ -89,6 +89,7 @@ Building for iOS
  $ cordova plugin add org.apache.cordova.geolocation
  $ cordova plugin add org.apache.cordova.splashscreen
  $ cordova plugin add org.apache.cordova.network-information
+ $ cordova plugin add org.apache.cordova.device-motion
  ```
 
  - Add iOS platform:
