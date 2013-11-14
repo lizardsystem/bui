@@ -52,10 +52,6 @@ Building for android:
  <preference name="splashscreen" value="splash" />
  <preference name="splashScreenDelay" value="5000" />
  ```
- and in the same file, set exit on suspend to true:
- ```
- <preference name="exit-on-suspend" value="true" />
- ```
 
  - Make your android/src/com/nens/bui/Bui.java look like this:
  ```

@@ -102,6 +102,7 @@
             var oldLayer = L.imageOverlay(initialImageUrl, imageBounds, {zIndex: 9999, opacity: 0.8});
             var newRadarImage = undefined;
             var imageUrl = undefined;
+            var acceleroWatch = undefined;
 
             function set_layer (layer_idx) {
                 imageUrl = radarImages[layer_idx];
@@ -125,7 +126,8 @@
                 var next_layer_idx = current_layer_idx === radarImages.length -1 ? 0 : current_layer_idx + 1;
                 changeClock(radarImages[next_layer_idx].slice(-28, -9));
                 if (next_layer_idx === 0) {
-                    setTimeout(function () {set_layer(next_layer_idx)}, 5 * interval_ms);
+                    set_layer(next_layer_idx);
+                    //setTimeout(function () {set_layer(next_layer_idx)}, 5 * interval_ms);
                 }
                 else {
                     set_layer(next_layer_idx);
@@ -141,7 +143,9 @@
             }
 
             slideLayerBackwards = function () {
-                set_layer(current_layer_idx - 1);
+                if (current_layer_idx > 0) {
+                    set_layer(current_layer_idx - 1);
+                }
             };
 
             function init_slider () {
@@ -215,54 +219,75 @@
             function orientationControl () {
                 console.debug("Instantiating deviceOrientation");
                 var time_steps = 0;
+                var firstmoveR = true;
+                var firstmoveL = true;
                 function onSuccess(acceleration) {
-                    time_steps++;
                     var mv = acceleration.x;
-                    if (current_layer_idx < radarImages.length-1) {
-                        if (mv < -2) {
-                            cycle_layers();
-                            time_steps = 0;
+                    if (mv > 2 || mv < -2) {
+                        time_steps++;
+                        if (current_layer_idx < radarImages.length-1) {
+                            if (firstmoveR && mv < -1) {
+                                firstmoveR = false;
+                                firstmoveL = true;
+                                slideLayerBackwards();
+                                time_steps++;
+                            }
+                            else if (mv < -4 && time_steps > 2) {
+                                cycle_layers();
+                                time_steps = 0;
+                            }
+                            else if (mv < -3 && time_steps > 4) {
+                                cycle_layers();
+                                time_steps = 0;
+                            }
+                            else if (mv < -2 && time_steps > 8) {
+                                cycle_layers();
+                                time_steps = 0;
+                            }
                         }
-                        if (mv < -1 && time_steps > 1) {
-                            cycle_layers();
-                            time_steps = 0;
+                        if (current_layer_idx >= 0) {
+                            if (firstmoveL && mv > 1) {
+                                firstmoveL = false;
+                                firstmoveR = true;
+                                slideLayerBackwards();
+                                time_steps++;
+                            }
+                            else if (mv > 4 && time_steps > 2) {
+                                slideLayerBackwards();
+                                time_steps = 0;
+                            }
+                            else if (mv > 3 && time_steps > 4) {
+                                slideLayerBackwards();
+                                time_steps = 0;
+                            }
+                            else if (mv > 2 && time_steps > 8) {
+                                slideLayerBackwards();
+                                time_steps = 0;
+                            }
                         }
-                        if (mv < -0.5 && time_steps > 2) {
-                            cycle_layers();
-                            time_steps = 0;
-                        }
-                    }
-                    if (current_layer_idx > 0) {
-                        if (mv > 2) {
-                            slideLayerBackwards();
-                            time_steps = 0;
-                        }
-                        if (mv > 1 && time_steps > 2) {
-                            slideLayerBackwards();
-                            time_steps = 0;
-                        }
-                        if (mv > 0.5 && time_steps > 1) {
-                            slideLayerBackwards();
+                        else {
                             time_steps = 0;
                         }
                     }
                 }
 
-                function onError() {
+                function onError () {
                     alert('onError!');
                 }
 
-                var options = { frequency: interval_ms / 2 };  // Update often
+                var options = { frequency: 0.1 };  // Update often
 
-                var watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
+                acceleroWatch = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
             }
 
             function start () {
                 cycle_layers_interval = setInterval(cycle_layers, interval_ms);
+                navigator.accelerometer.clearWatch(acceleroWatch);
             }
 
             function stop () {
                 clearInterval(cycle_layers_interval);
+                orientationControl ();
                 cycle_layers_interval = null;
             }
 
@@ -318,7 +343,7 @@
                 L.tileLayer('tiles/{z}/{x}/{y}.png').addTo(map);
 
                 window.map = map;
-            };
+            }
 
             // Start clock
             var clock = document.getElementById('clock');
@@ -444,7 +469,6 @@
                 init_slider();
                 initClock(initialImageUrl.slice(-28, -9));
                 start();
-                orientationControl();
                 }
 
             init_neerslagradar();
