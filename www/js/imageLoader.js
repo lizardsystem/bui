@@ -38,6 +38,7 @@ function onDeviceReady () {
         var uri = imageUrlBase + animationDatetimes[0]; //2013-11-04T14%3A00%3A00.000Z
         var filePath = sPath + animationDatetimes[0] + '.png';
         var count = 0;
+        var errorCount = 0;
 
         var succes = function(entry) {
             count++;
@@ -53,6 +54,10 @@ function onDeviceReady () {
 
         var failure = function(error) {
             count++;
+            errorCount++;
+            if (errorCount / animationDatetimes.length > 0.8) {
+                alert("Er gaat iets mis bij het downloaden van de radarbeelden. Mogelijk is de server tijdelijk onbereikbaar.");
+            }
             lastOne = count === animationDatetimes.length ? true: false;
             console.debug("download error source " + error.source);
             console.debug("download error target " + error.target);

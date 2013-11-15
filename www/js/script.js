@@ -373,10 +373,10 @@
                 ];
                 };
 
-                width = 90;
-                height = 90;
-                offSetX = 45;
-                offSetY = 45;
+                width = 135;
+                height = 135;
+                offSetX = 68;
+                offSetY = 68;
                 pi = Math.PI;
                 
                 scaleMins = d3.scale.linear().domain([0, 59 + 59 / 60]).range([0, 2 * pi]);
