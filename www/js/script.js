@@ -123,7 +123,6 @@
                     
             function cycle_layers () {
                 var next_layer_idx = current_layer_idx === radarImages.length -1 ? 0 : current_layer_idx + 1;
-                changeClock(radarImages[next_layer_idx].slice(-28, -9));
                 if (next_layer_idx === 0) {
                     set_layer(next_layer_idx);
                     //setTimeout(function () {set_layer(next_layer_idx)}, 5 * interval_ms);
@@ -230,15 +229,15 @@
                                 slideLayerBackwards();
                                 time_steps++;
                             }
-                            else if (mv < -4 && time_steps > 2) {
+                            else if (mv < -4 && time_steps > 3) {
                                 cycle_layers();
                                 time_steps = 0;
                             }
-                            else if (mv < -3 && time_steps > 4) {
+                            else if (mv < -3 && time_steps > 6) {
                                 cycle_layers();
                                 time_steps = 0;
                             }
-                            else if (mv < -2 && time_steps > 8) {
+                            else if (mv < -2 && time_steps > 12) {
                                 cycle_layers();
                                 time_steps = 0;
                             }
@@ -250,15 +249,15 @@
                                 slideLayerBackwards();
                                 time_steps++;
                             }
-                            else if (mv > 4 && time_steps > 2) {
+                            else if (mv > 4 && time_steps > 3) {
                                 slideLayerBackwards();
                                 time_steps = 0;
                             }
-                            else if (mv > 3 && time_steps > 4) {
+                            else if (mv > 3 && time_steps > 6) {
                                 slideLayerBackwards();
                                 time_steps = 0;
                             }
-                            else if (mv > 2 && time_steps > 8) {
+                            else if (mv > 2 && time_steps > 12) {
                                 slideLayerBackwards();
                                 time_steps = 0;
                             }
@@ -389,7 +388,7 @@
             initRender = function(data) {
                 var hourArc, minuteArc;
                 
-                minuteArc = d3.svg.arc().innerRadius(0).outerRadius(53).startAngle(function(d) {
+                minuteArc = d3.svg.arc().innerRadius(0).outerRadius(60).startAngle(function(d) {
                   return scaleMins(d.numeric);
                 }).endAngle(function(d) {
                   return scaleMins(d.numeric);
