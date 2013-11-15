@@ -26,7 +26,7 @@
 	position: absolute;
 	left: 0px;
 	right: 0px;
-	height: 2cm; 
+	height: 250px; 
 	border-radius: 5px;
   z-index: 99999;
 	bottom: 0px;
@@ -43,9 +43,10 @@
 #progress-bar {
   position: relative;
   width: 100px;
-  height: 5px;
+  height: 10px;
   background-color: darkred;
   border-radius: 0;
+  top: 240px;
 }
 
 .chart {
@@ -80,11 +81,13 @@ only screen and (                min-resolution: 192dpi) and (min-width: 320px),
 only screen and (                min-resolution: 2dppx)  and (min-width: 320px) { 
 
   /* Small screen, retina, stuff to override above media query */
+
+
   #slider {
     position: absolute;
     left: 0px;
     right: 0px;
-    height: 1cm; 
+    height: 75px; 
     border-radius: 5px;
     z-index: 99999;
     bottom: 0px;
@@ -93,5 +96,13 @@ only screen and (                min-resolution: 2dppx)  and (min-width: 320px) 
     background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.4) 100%);
   }
 
+#progress-bar {
+  position: relative;
+  width: 100px;
+  height: 5px;
+  background-color: darkred;
+  border-radius: 0;
+  top: 145px;
+}
 
 }
