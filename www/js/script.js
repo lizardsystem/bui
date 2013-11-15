@@ -62,7 +62,6 @@
             };
 
             gotFileSystem = function (fileSystem) {
-                console.debug("Got Filesystem, getting directory");
                 fileSystem.root.getDirectory("bui", {create: false}, gotDirectory, dirError);
             };
 
@@ -210,14 +209,13 @@
             
             //debug puposes
             if (window.DeviceOrientationEvent) {
-                console.debug("DeviceOrientation is supported");
+                //console.debug("DeviceOrientation is supported");
             }
             else {
                 console.debug("DeviceOrientation is not supported");
             }
 
             function orientationControl () {
-                console.debug("Instantiating deviceOrientation");
                 var time_steps = 0;
                 var firstmoveR = true;
                 var firstmoveL = true;

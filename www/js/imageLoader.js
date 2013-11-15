@@ -16,24 +16,21 @@ function buildAnimationDatetimes () {
         }
 
     animationDatetimes.reverse();
-    console.debug(animationDatetimes.length);
     return animationDatetimes;
 }
 
 function init () {
-    var animationDatetimes = buildAnimationDatetimes();
-    document.addEventListener("deviceready", onDeviceReady(animationDatetimes), false);
+    document.addEventListener("deviceready", onDeviceReady, false);
 }
 
-function onDeviceReady (animationDatetimes) {
+function onDeviceReady () {
     navigator.splashscreen.show();
-
+    var animationDatetimes = buildAnimationDatetimes();
     var imageUrlBase = 'http://regenradar.lizard.net/wms/?WIDTH=525&HEIGHT=497&SRS=EPSG%3A3857&BBOX=147419.974%2C6416139.595%2C1001045.904%2C7224238.809&TIME=';
 
     var radarImages = [];
 
     gotFile = function (file) {
-        console.debug("Got dummy file");
         var sPath = file.fullPath.replace("dummy.png","");
         var fileTransfer = new FileTransfer();
 
@@ -57,12 +54,12 @@ function onDeviceReady (animationDatetimes) {
         var failure = function(error) {
             count++;
             lastOne = count === animationDatetimes.length ? true: false;
-            console.log("download error source " + error.source);
-            console.log("download error target " + error.target);
-            console.log("upload error code" + error.code);
+            console.debug("download error source " + error.source);
+            console.debug("download error target " + error.target);
+            console.debug("upload error code" + error.code);
             if (lastOne) {
                 window.location='./main.html';
-                console.log("Start the show! \n" +  radarImages);
+                console.debug("Start the show! \n" +  radarImages);
             }
         };
 
@@ -81,26 +78,21 @@ function onDeviceReady (animationDatetimes) {
     };
 
     gotDirectory = function (directory) {
-        console.debug("Got Directory, getting or creating a dummy file.");
         directory.getFile("dummy.png", {create: true, exclusive: false}, gotFile, onFileError);
     };
 
     removeDirectory = function (directory) {
-        console.debug("Got old directory, removing.");
-        directory.removeRecursively();
-        createDirectory();
+        directory.removeRecursively(createDirectory, onDirectoryRemoveError);
     };
 
-    var filesystem;
+    var fileSystemGlobal;
 
     gotFileSystem = function (fileSystem) {
-        console.debug("Got Filesystem, removing old directory");
         fileSystemGlobal = fileSystem;
         fileSystem.root.getDirectory("bui", {create: false}, removeDirectory, createDirectory);
     };
 
     createDirectory = function () {
-        console.debug("Creating new directory");
         fileSystemGlobal.root.getDirectory("bui", {create: true, exclusive: false}, gotDirectory, onDirectoryError);
     };
 
@@ -115,6 +107,12 @@ function onDeviceReady (animationDatetimes) {
         attempts++;
         getFileSystem();
     };
+
+    onDirectoryRemoveError = function (msg) {
+        console.error("Removing directory failed");
+        attempts++;
+        getFileSystem();
+    }
 
     onFileError = function (msg) {
         console.error("No file: " + msg);
