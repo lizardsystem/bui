@@ -383,19 +383,19 @@
                 scaleHours = d3.scale.linear().domain([0, 11 + 59 / 60]).range([0, 2 * pi]);
                 vis = d3.selectAll(".chart").append("svg:svg").attr("width", width).attr("height", height);
                 clockGroup = vis.append("svg:g").attr("transform", "translate(" + offSetX + "," + offSetY + ")");
-                clockGroup.append("svg:circle").attr("r", 40).attr("fill", "none").attr("class", "clock outercircle").attr("opacity", "1").attr("stroke", "black").attr("stroke-width", 4);
-                clockGroup.append("svg:circle").attr("r", 3).attr("fill", "black").attr("class", "clock innercircle").attr("opacity", "1");
+                clockGroup.append("svg:circle").attr("r", 60).attr("fill", "none").attr("class", "clock outercircle").attr("opacity", "1").attr("stroke", "black").attr("stroke-width", 4);
+                clockGroup.append("svg:circle").attr("r", 5).attr("fill", "black").attr("class", "clock innercircle").attr("opacity", "1");
 
             initRender = function(data) {
                 var hourArc, minuteArc;
                 
-                minuteArc = d3.svg.arc().innerRadius(0).outerRadius(35).startAngle(function(d) {
+                minuteArc = d3.svg.arc().innerRadius(0).outerRadius(53).startAngle(function(d) {
                   return scaleMins(d.numeric);
                 }).endAngle(function(d) {
                   return scaleMins(d.numeric);
                 });
 
-                hourArc = d3.svg.arc().innerRadius(0).outerRadius(25).startAngle(function(d) {
+                hourArc = d3.svg.arc().innerRadius(0).outerRadius(37).startAngle(function(d) {
                   return scaleHours(d.numeric % 12);
                 }).endAngle(function(d) {
                   return scaleHours(d.numeric % 12);
