@@ -92,6 +92,26 @@
         }
 
         function roll(radarImages) {
+
+            function getPPI(){
+                // create an empty element
+                var div = document.createElement("div");
+                // give it an absolute size of one inch
+                div.style.width="1in";
+                // append it to the body
+                var body = document.getElementsByTagName("body")[0];
+                body.appendChild(div);
+                // read the computed width
+                var ppi = document.defaultView.getComputedStyle(div, null).getPropertyValue('width');
+                // remove it again
+                body.removeChild(div);
+                // and return the value
+                return parseFloat(ppi);
+            }
+
+            var retina = getPPI() > 300;
+
+            console.debug("Retina: " + getPPI());
             var map = null;
             var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
             var interval_ms = 150;
@@ -372,29 +392,32 @@
                 ];
                 };
 
-                width = 135;
-                height = 135;
-                offSetX = 68;
-                offSetY = 68;
+                width = retina ? 68 : 135;
+                height = retina ? 68 : 135;
+                offSetX = retina ? 34 : 68;
+                offSetY = retina ? 34 : 68;
                 pi = Math.PI;
                 
                 scaleMins = d3.scale.linear().domain([0, 59 + 59 / 60]).range([0, 2 * pi]);
                 scaleHours = d3.scale.linear().domain([0, 11 + 59 / 60]).range([0, 2 * pi]);
                 vis = d3.selectAll(".chart").append("svg:svg").attr("width", width).attr("height", height);
                 clockGroup = vis.append("svg:g").attr("transform", "translate(" + offSetX + "," + offSetY + ")");
-                clockGroup.append("svg:circle").attr("r", 60).attr("fill", "none").attr("class", "clock outercircle").attr("opacity", "1").attr("stroke", "black").attr("stroke-width", 4);
+                clockGroup.append("svg:circle").attr("r", function () {
+                    return retina ? 30 : 60;}).attr("fill", "none").attr("class", "clock outercircle").attr("opacity", "1").attr("stroke", "black").attr("stroke-width", 4);
                 clockGroup.append("svg:circle").attr("r", 5).attr("fill", "black").attr("class", "clock innercircle").attr("opacity", "1");
 
             initRender = function(data) {
                 var hourArc, minuteArc;
                 
-                minuteArc = d3.svg.arc().innerRadius(0).outerRadius(60).startAngle(function(d) {
+                minuteArc = d3.svg.arc().innerRadius(0).outerRadius( function () {
+                    return retina ? 20 : 40;}).startAngle(function(d) {
                   return scaleMins(d.numeric);
                 }).endAngle(function(d) {
                   return scaleMins(d.numeric);
                 });
 
-                hourArc = d3.svg.arc().innerRadius(0).outerRadius(37).startAngle(function(d) {
+                hourArc = d3.svg.arc().innerRadius(0).outerRadius( function () {
+                    return retina ? 15 : 30;}).startAngle(function(d) {
                   return scaleHours(d.numeric % 12);
                 }).endAngle(function(d) {
                   return scaleHours(d.numeric % 12);
@@ -421,13 +444,15 @@
             render = function (data) {
                 var hourArc, minuteArc;
 
-                minuteArc = d3.svg.arc().innerRadius(0).outerRadius(35).startAngle(function(d) {
+                minuteArc = d3.svg.arc().innerRadius(0).outerRadius( function () {
+                    return retina ? 20 : 40;}).startAngle(function(d) {
                   return scaleMins(d.numeric);
                 }).endAngle(function(d) {
                   return scaleMins(d.numeric);
                 });
 
-                hourArc = d3.svg.arc().innerRadius(0).outerRadius(25).startAngle(function(d) {
+                hourArc = d3.svg.arc().innerRadius(0).outerRadius( function () {
+                    return retina ? 15 : 30;}).startAngle(function(d) {
                   return scaleHours(d.numeric % 12);
                 }).endAngle(function(d) {
                   return scaleHours(d.numeric % 12);
