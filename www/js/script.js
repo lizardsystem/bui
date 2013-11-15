@@ -249,15 +249,15 @@
                                 slideLayerBackwards();
                                 time_steps++;
                             }
-                            else if (mv < -4 && time_steps > 3) {
+                            else if (mv < -4 && time_steps > 0) {
                                 cycle_layers();
                                 time_steps = 0;
                             }
-                            else if (mv < -3 && time_steps > 6) {
+                            else if (mv < -2.5 && time_steps > 2) {
                                 cycle_layers();
                                 time_steps = 0;
                             }
-                            else if (mv < -2 && time_steps > 12) {
+                            else if (mv < -1.5 && time_steps > 3) {
                                 cycle_layers();
                                 time_steps = 0;
                             }
@@ -269,15 +269,15 @@
                                 slideLayerBackwards();
                                 time_steps++;
                             }
-                            else if (mv > 4 && time_steps > 3) {
+                            else if (mv > 4 && time_steps > 0) {
                                 slideLayerBackwards();
                                 time_steps = 0;
                             }
-                            else if (mv > 3 && time_steps > 6) {
+                            else if (mv > 2.5 && time_steps > 2) {
                                 slideLayerBackwards();
                                 time_steps = 0;
                             }
-                            else if (mv > 2 && time_steps > 12) {
+                            else if (mv > 1.5 && time_steps > 3) {
                                 slideLayerBackwards();
                                 time_steps = 0;
                             }
@@ -292,7 +292,7 @@
                     alert('onError!');
                 }
 
-                var options = { frequency: 0.1 };  // Update often
+                var options = { frequency: 20 };  // Update often
 
                 acceleroWatch = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
             }
