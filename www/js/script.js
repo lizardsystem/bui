@@ -476,16 +476,16 @@
             }
             // End clock
 
-            if (window.innerHeight > 900) {
-                console.debug("big 'ol screen enlarging slider");
-                document.getElementById("slider").style.height = "250px";
-                document.getElementById("progress-bar").style.height = "10px";
-                document.getElementById("progress-bar").style.top = "240px";
-            }
-            else {
-                document.getElementById("slider").style.height = "150px";
-                document.getElementById("progress-bar").style.top = "145px";
-            }
+            // if (window.innerHeight > 900) {
+            //     console.debug("big 'ol screen enlarging slider");
+            //     document.getElementById("slider").style.height = "250px";
+            //     document.getElementById("progress-bar").style.height = "10px";
+            //     document.getElementById("progress-bar").style.top = "240px";
+            // }
+            // else {
+            //     document.getElementById("slider").style.height = "150px";
+            //     document.getElementById("progress-bar").style.top = "145px";
+            // }
 
             function init_neerslagradar () {
                 init_map();
