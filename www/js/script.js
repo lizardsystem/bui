@@ -314,8 +314,8 @@
                     zoomControl: false
                 });
 
-                map.attributionControl.setPrefix('App van <a href="http://www.nelen-schuurmans.nl">Nelen & Schuurmans</a>');
-                map.attributionControl.addAttribution('Radarbeelden: <a href="http://nationaleregenradar.nl/">nationale regenradar</a>');
+                map.attributionControl.setPrefix('App van Nelen &amp; Schuurmans');
+                map.attributionControl.addAttribution('en Nationale Regenradar');
                 map.attributionControl.setPosition('topright');
 
                 if (window.innerHeight > 900) {
@@ -342,7 +342,7 @@
                     start();
                 }
 
-                L.tileLayer('tiles/{z}/{x}/{y}.png', {attribution: 'Kaartdata: <a href="http://www.openstreetmap.org">OSM</a>'}).addTo(map);
+                L.tileLayer('tiles/{z}/{x}/{y}.png', {attribution: 'Kaartdata: OSM'}).addTo(map);
 
                 window.map = map;
             }
