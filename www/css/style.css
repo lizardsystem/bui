@@ -3,12 +3,14 @@
     #map { width: 100%; height:100%; background-color: #44C1E9;}
 }
 
-.leaflet-layer {
-  opacity: 0.5;
-}
-
 .olControlZoom {
     display: none;
+}
+
+.leaflet-top {
+  -webkit-transform:rotate(90deg);
+  right: -204px;
+  top: 204px;
 }
 
 .olTileImage {
@@ -24,11 +26,11 @@
 	position: absolute;
 	left: 0px;
 	right: 0px;
-	height: 20%; 
+	height: 2cm; 
 	border-radius: 5px;
   z-index: 99999;
 	bottom: 0px;
-	margin: 2%;
+	margin: 0.2cm;
   background: -webkit-linear-gradient(top, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.4) 100%);
   background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.4) 100%);
 }
@@ -38,15 +40,19 @@
   background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%,rgba(0,0,0,0.5) 100%);
 }
 
-
+#progress-bar {
+  position: relative;
+  width: 100px;
+  height: 5px;
+  background-color: darkred;
+  border-radius: 0;
+}
 
 .chart {
 	position: absolute;
-	bottom: 20%;
-	margin: 2%;
+  left: 0.5cm;
+	top: 0.5cm;
 	z-index: 9999;
-  transition: 0.25s;
-  
 }
 
 #tool-tip {

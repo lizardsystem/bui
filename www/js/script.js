@@ -312,9 +312,13 @@
                        [57, 10],
                        [47, 0]
                        ],
-                    attributionControl: false,
+                    attributionControl: true,
                     zoomControl: false
                 });
+
+                map.attributionControl.setPrefix('App van <a href="http://www.nelen-schuurmans.nl">Nelen & Schuurmans</a>');
+                map.attributionControl.addAttribution('Radarbeelden: <a href="http://nationaleregenradar.nl/">nationale regenradar</a>');
+                map.attributionControl.setPosition('topright');
 
                 if (window.innerHeight > 900) {
                     console.debug("big 'ol screen zooming in");
@@ -340,7 +344,7 @@
                     start();
                 }
 
-                L.tileLayer('tiles/{z}/{x}/{y}.png').addTo(map);
+                L.tileLayer('tiles/{z}/{x}/{y}.png', {attribution: 'Kaartdata: <a href="http://www.openstreetmap.org">OSM</a>'}).addTo(map);
 
                 window.map = map;
             }
@@ -381,8 +385,8 @@
                 scaleHours = d3.scale.linear().domain([0, 11 + 59 / 60]).range([0, 2 * pi]);
                 vis = d3.selectAll(".chart").append("svg:svg").attr("width", width).attr("height", height);
                 clockGroup = vis.append("svg:g").attr("transform", "translate(" + offSetX + "," + offSetY + ")");
-                clockGroup.append("svg:circle").attr("r", 40).attr("fill", "none").attr("class", "clock outercircle").attr("opacity", "1").attr("stroke", "white").attr("stroke-width", 4);
-                clockGroup.append("svg:circle").attr("r", 3).attr("fill", "white").attr("class", "clock innercircle").attr("opacity", "1");
+                clockGroup.append("svg:circle").attr("r", 40).attr("fill", "none").attr("class", "clock outercircle").attr("opacity", "1").attr("stroke", "black").attr("stroke-width", 4);
+                clockGroup.append("svg:circle").attr("r", 3).attr("fill", "black").attr("class", "clock innercircle").attr("opacity", "1");
 
             initRender = function(data) {
                 var hourArc, minuteArc;
@@ -405,7 +409,7 @@
                   } else if (d.unit === "hours") {
                     return hourArc(d);
                   }
-                }).attr("class", "clockhand").attr("opacity", "1").attr("stroke", "white").attr("stroke-linecap", "round")
+                }).attr("class", "clockhand").attr("opacity", "1").attr("stroke", "black").attr("stroke-linecap", "round")
                 .attr("stroke-width", function(d) {
                   if (d.unit === "seconds") {
                     return 2;
@@ -433,7 +437,7 @@
                 });
 
                 return clockGroup.selectAll(".clockhand")
-                    .data(data).transition().duration(interval_ms.toString()).ease("linear", 1, 0.8)
+                    .data(data).transition().duration(interval_ms.toString()).ease("elastic", 1, 0.8)
                     .attr("d", function(d) {
                         if (d.unit === "minutes") {
                             return minuteArc(d);
@@ -452,17 +456,38 @@
             var changeClock = function(layer_datetime) {
                 var data;
                 data = fields(layer_datetime);
-                moveClock();
+                moveBar();
                 return render(data);
             };
 
-            function moveClock () {
-                var clock = document.getElementById("clock");
-                var max_width = window.innerWidth - 90;
-                var left = current_layer_idx/radarImages.length * (0.98 * max_width);
-                clock.style.left = left.toString() + "px";
+            function moveBar () {
+                var bar = document.getElementById("progress-bar");
+                parent = bar.parentNode;
+                var max_width = parent.offsetWidth;
+                var left = current_layer_idx/(radarImages.length-1) * (max_width - bar.offsetWidth);
+                bar.style.left = left.toString() + "px";
+                if (left === 0) {
+                    bar.style.borderRadius = "0 0 0 5px";
+                }
+                else if (left === max_width - bar.offsetWidth) {
+                    bar.style.borderRadius = "0 0 5px 0";
+                }
+                else {
+                    bar.style.borderRadius = "0";
+                }
             }
             // End clock
+
+            if (window.innerHeight > 900) {
+                console.debug("big 'ol screen enlarging slider");
+                document.getElementById("slider").style.height = "250px";
+                document.getElementById("progress-bar").style.height = "10px";
+                document.getElementById("progress-bar").style.top = "240px";
+            }
+            else {
+                document.getElementById("slider").style.height = "150px";
+                document.getElementById("progress-bar").style.top = "145px";
+            }
 
             function init_neerslagradar () {
                 init_map();
