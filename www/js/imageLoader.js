@@ -55,7 +55,9 @@ function onDeviceReady () {
         var failure = function(error) {
             count++;
             errorCount++;
-            if (errorCount / animationDatetimes.length > 0.8) {
+            var errorMsg = true;
+            if (errorCount / animationDatetimes.length > 0.8 && errorMsg) {
+                errorMsg = false;
                 alert("Er gaat iets mis bij het downloaden van de radarbeelden. Mogelijk is de server tijdelijk onbereikbaar.");
             }
             lastOne = count === animationDatetimes.length ? true: false;

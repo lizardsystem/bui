@@ -8,9 +8,9 @@
 }
 
 .leaflet-top {
-  -webkit-transform:rotate(90deg);
-  right: -204px;
-  top: 204px;
+  -webkit-transform: scale(1.2) rotate(90deg);
+  right: -176px;
+  top: 214px;
 }
 
 .olTileImage {

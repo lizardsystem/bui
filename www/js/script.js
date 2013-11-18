@@ -175,11 +175,11 @@
                 hammertime.on("drag", function(ev) {
                     ev.gesture.preventDefault();
                     // Check direction and move every tenth pixel
-                    if (ev.gesture.deltaX > (previous_drag+10) && current_layer_idx < radarImages.length-1) {
+                    if (ev.gesture.deltaX > (previous_drag+15) && current_layer_idx < radarImages.length-1) {
                         cycle_layers();
                         previous_drag = ev.gesture.deltaX;
                     }
-                    if (ev.gesture.deltaX < (previous_drag-10) && current_layer_idx > 0) {
+                    if (ev.gesture.deltaX < (previous_drag-15) && current_layer_idx > 0) {
                         slideLayerBackwards();
                         previous_drag = ev.gesture.deltaX;
                     }
@@ -334,7 +334,7 @@
                 });
 
                 map.attributionControl.setPrefix('App van Nelen &amp; Schuurmans');
-                map.attributionControl.addAttribution('en Nationale Regenradar');
+                map.attributionControl.addAttribution('Nationale Regenradar');
                 map.attributionControl.setPosition('topright');
 
                 if (window.innerHeight > 900) {
