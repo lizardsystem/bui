@@ -8,9 +8,9 @@
 }
 
 .leaflet-top {
-  -webkit-transform:rotate(90deg);
-  right: -204px;
-  top: 204px;
+  -webkit-transform: scale(1.2) rotate(90deg);
+  right: -176px;
+  top: 214px;
 }
 
 .olTileImage {
@@ -77,18 +77,18 @@
   /* Small screen, retina, stuff to override above media query */
 
 
-  #slider {
-    position: absolute;
-    left: 0px;
-    right: 0px;
-    height: 75px; 
-    border-radius: 5px;
-    z-index: 99999;
-    bottom: 0px;
-    margin: 0.2cm;
-    background: -webkit-linear-gradient(top, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.4) 100%);
-    background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.4) 100%);
-  }
+#slider {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  height: 75px; 
+  border-radius: 5px;
+  z-index: 99999;
+  bottom: 0px;
+  margin: 0.2cm;
+  background: -webkit-linear-gradient(top, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.4) 100%);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.4) 100%);
+}
 
 #progress-bar {
   position: relative;
