@@ -41,6 +41,14 @@ Building for android:
  $ cordova plugin add org.apache.cordova.geolocation
  $ cordova plugin add org.apache.cordova.network-information
  $ cordova plugin add org.apache.cordova.device-motion
+ $ cordova plugin add org.apache.cordova.device
+ ```
+
+ - Add the following platform-specific configuration (in platforms/android/res/xml/config.xml):
+ ```
+<feature name="Device">
+    <param name="android-package" value="org.apache.cordova.device.Device" />
+</feature>
  ```
 
  - Add icons and splashscreens to platforms/android/res/<icons-folders>/<splash|icon>.png
@@ -86,6 +94,7 @@ Building for iOS
  $ cordova plugin add org.apache.cordova.splashscreen
  $ cordova plugin add org.apache.cordova.network-information
  $ cordova plugin add org.apache.cordova.device-motion
+ $ cordova plugin add org.apache.cordova.device
  ```
 
  - Add iOS platform:
