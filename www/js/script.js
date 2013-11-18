@@ -7,6 +7,11 @@
                 console.debug("Running as cordova application.\nWMS is loaded from the filesystem.\n");
                 document.addEventListener("deviceready", whichImagesAreWeTalking, true);
                 document.addEventListener("backbutton", onBackClickEvent, false);
+
+                if(/iOS/i.test(window.device.platform)) {
+                    console.debug('Running on iOS');
+                    document.getElementById('slider').style.height = '90px';
+                }
             }
             else {
                 console.debug("Running as web application.\nWMS is loaded from original wms source on the fly.\nCordova plugins behave unexpectedly, for debugging purposes only!\n");
