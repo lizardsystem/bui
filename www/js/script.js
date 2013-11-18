@@ -247,12 +247,10 @@
                     var mv = acceleration.x;
                     if (mv < -1.5 && current_layer_idx < radarImages.length) {
                         time_steps++;
-                        console.debug("moving right");
                         if (firstmoveR) {
                             firstmoveR = false;
                             firstmoveL = true;
                             cycle_layers();
-                            time_steps++;
                         }
                         else if (time_steps > 2) {
                             cycle_layers();
@@ -263,19 +261,16 @@
                             time_steps = 0;
                         }
                         else if (mv < -3) {
-                            console.debug("moving right FAST");
                             cycle_layers();
                             time_steps = 0;
                         }
                     }
                     else if (mv > 1.5 && current_layer_idx > 0) {
                         time_steps++;
-                        console.debug("moving left");
                         if (firstmoveL) {
                             firstmoveL = false;
                             firstmoveR = true;
                             slideLayerBackwards();
-                            time_steps++;
                         }
                         else if (time_steps > 2) {
                             slideLayerBackwards();
@@ -286,7 +281,6 @@
                             time_steps = 0;
                         }
                         else if (mv > 3) {
-                            console.debug("moving left FAST");
                             slideLayerBackwards();
                             time_steps = 0;
                         }
