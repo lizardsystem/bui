@@ -44,7 +44,7 @@ Building for android:
  $ cordova plugin add org.apache.cordova.device
  ```
 
- - Add the following platform-specific configuration (in app/res/xml/config.xml):
+ - Add the following platform-specific configuration (in platforms/android/res/xml/config.xml):
  ```
 <feature name="Device">
     <param name="android-package" value="org.apache.cordova.device.Device" />
