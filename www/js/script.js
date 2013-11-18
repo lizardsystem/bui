@@ -409,8 +409,8 @@
                 vis = d3.selectAll(".chart").append("svg:svg").attr("width", width).attr("height", height);
                 clockGroup = vis.append("svg:g").attr("transform", "translate(" + offSetX + "," + offSetY + ")");
                 clockGroup.append("svg:circle").attr("r", function () {
-                    return retina ? 30 : 60;}).attr("fill", "none").attr("class", "clock outercircle").attr("opacity", "1").attr("stroke", "black").attr("stroke-width", 4);
-                clockGroup.append("svg:circle").attr("r", 5).attr("fill", "black").attr("class", "clock innercircle").attr("opacity", "1");
+                    return retina ? 30 : 60;}).attr("fill", "none").attr("class", "clock outercircle").attr("opacity", "1").attr("stroke", "black").attr("stroke-width", function () {return retina ? 2 : 4;});
+                clockGroup.append("svg:circle").attr("r", function () {return retina ? 2.5 : 5;}).attr("fill", "black").attr("class", "clock innercircle").attr("opacity", "1");
 
             initRender = function(data) {
                 var hourArc, minuteArc;
@@ -440,9 +440,9 @@
                   if (d.unit === "seconds") {
                     return 2;
                   } else if (d.unit === "minutes") {
-                    return 3;
+                    return retina ? 1.5 : 3;
                   } else if (d.unit === "hours") {
-                    return 5;
+                    return retina ? 2.5 : 5;
                   }
                 }).attr("fill", "none");
             };
@@ -495,10 +495,10 @@
                 var left = current_layer_idx/(radarImages.length-1) * (max_width - bar.offsetWidth);
                 bar.style.left = left.toString() + "px";
                 if (left === 0) {
-                    bar.style.borderRadius = "0 0 0 5px";
+                    bar.style.borderRadius = "0 5px 0 0";
                 }
                 else if (left === max_width - bar.offsetWidth) {
-                    bar.style.borderRadius = "0 0 5px 0";
+                    bar.style.borderRadius = "5px 0 0 0";
                 }
                 else {
                     bar.style.borderRadius = "0";
