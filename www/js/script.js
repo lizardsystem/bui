@@ -230,24 +230,20 @@
                     if (mv < -1.5 && current_layer_idx < radarImages.length - 1) {
                         time_steps++;
                         if (firstmoveR) {
-                            console.debug("First move right");
                             firstmoveR = false;
                             firstmoveL = true;
                             cycle_layers();
                             time_steps = 0;
                         }
                         else if (time_steps > 2) {
-                            console.debug("Slow move right");
                             cycle_layers();
                             time_steps = 0;
                         }
                         else if (mv < -2 && time_steps > 1) {
-                            console.debug("Move right");
                             cycle_layers();
                             time_steps = 0;
                         }
                         else if (mv < -3) {
-                            console.debug("Fast move right");
                             cycle_layers();
                             time_steps = 0;
                         }
@@ -255,30 +251,25 @@
                     else if (mv > 1.5 && current_layer_idx > 0) {
                         time_steps++;
                         if (firstmoveL) {
-                            console.debug("First move left");
                             firstmoveL = false;
                             firstmoveR = true;
                             slideLayerBackwards();
                             time_steps = 0;
                         }
                         else if (time_steps > 2) {
-                            console.debug("Slow move left");
                             slideLayerBackwards();
                             time_steps = 0;
                         }
                         else if (mv > 2 && time_steps > 1) {
-                            console.debug("Move left");
                             slideLayerBackwards();
                             time_steps = 0;
                         }
                         else if (mv > 3) {
-                            console.debug("Fast move left");
                             slideLayerBackwards();
                             time_steps = 0;
                         }
                     }
                     else {
-                        console.debug("No Move");
                         time_steps = 0;
                         firstmoveR = true;
                         firstmoveL = true;
