@@ -334,6 +334,11 @@
                 map.attributionControl.addAttribution('Nationale Regenradar');
                 map.attributionControl.setPosition('topright');
 
+                if (retina) {
+                    document.getElementsByClassName('leaflet-top')[1].style.webkitTransform = 'scale(0.6) rotate(90deg)';
+                    document.getElementsByClassName('leaflet-top')[1].style.height = '20px';
+                }
+
                 if (window.innerHeight > 900) {
                     console.debug("big 'ol screen zooming in");
                     map.setView([51.7, 5.3], 8, {animate: false});
