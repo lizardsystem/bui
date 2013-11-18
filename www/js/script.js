@@ -109,9 +109,16 @@
                 return parseFloat(ppi);
             }
 
-            var retina = getPPI() > 300;
+            
 
             console.debug("Retina: " + getPPI());
+
+            var slider = document.getElementById('slider');
+            document.getElementById('progress-bar').style.height = 0.03 * slider.offsetHeight + 'px';
+
+            var retina = slider.offsetHeight < 100;
+            console.debug("retina: " + retina);
+            
             var map = null;
             var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
             var interval_ms = 150;
@@ -240,56 +247,51 @@
                 var firstmoveL = true;
                 function onSuccess(acceleration) {
                     var mv = acceleration.x;
-                    if (mv < -1.5 && current_layer_idx < radarImages.length) {
+                    if (mv > 2 || mv < -2) {
                         time_steps++;
-                        console.debug("moving right");
-                        if (firstmoveR) {
-                            firstmoveR = false;
-                            firstmoveL = true;
-                            cycle_layers();
-                            time_steps++;
+                        if (current_layer_idx < radarImages.length-1) {
+                            if (firstmoveR && mv < -1) {
+                                firstmoveR = false;
+                                firstmoveL = true;
+                                slideLayerBackwards();
+                                time_steps++;
+                            }
+                            else if (mv < -4 && time_steps > 0) {
+                                cycle_layers();
+                                time_steps = 0;
+                            }
+                            else if (mv < -2.5 && time_steps > 2) {
+                                cycle_layers();
+                                time_steps = 0;
+                            }
+                            else if (mv < -1.5 && time_steps > 3) {
+                                cycle_layers();
+                                time_steps = 0;
+                            }
                         }
-                        else if (time_steps > 2) {
-                            cycle_layers();
+                        if (current_layer_idx >= 0) {
+                            if (firstmoveL && mv > 1) {
+                                firstmoveL = false;
+                                firstmoveR = true;
+                                slideLayerBackwards();
+                                time_steps++;
+                            }
+                            else if (mv > 4 && time_steps > 0) {
+                                slideLayerBackwards();
+                                time_steps = 0;
+                            }
+                            else if (mv > 2.5 && time_steps > 2) {
+                                slideLayerBackwards();
+                                time_steps = 0;
+                            }
+                            else if (mv > 1.5 && time_steps > 3) {
+                                slideLayerBackwards();
+                                time_steps = 0;
+                            }
+                        }
+                        else {
                             time_steps = 0;
                         }
-                        else if (mv < -2 && time_steps > 1) {
-                            cycle_layers();
-                            time_steps = 0;
-                        }
-                        else if (mv < -3) {
-                            console.debug("moving right FAST");
-                            cycle_layers();
-                            time_steps = 0;
-                        }
-                    }
-                    else if (mv > 1.5 && current_layer_idx > 0) {
-                        time_steps++;
-                        console.debug("moving left");
-                        if (firstmoveL) {
-                            firstmoveL = false;
-                            firstmoveR = true;
-                            slideLayerBackwards();
-                            time_steps++;
-                        }
-                        else if (time_steps > 2) {
-                            slideLayerBackwards();
-                            time_steps = 0;
-                        }
-                        else if (mv > 2 && time_steps > 1) {
-                            slideLayerBackwards();
-                            time_steps = 0;
-                        }
-                        else if (mv > 3) {
-                            console.debug("moving left FAST");
-                            slideLayerBackwards();
-                            time_steps = 0;
-                        }
-                    }
-                    else {
-                        time_steps = 0;
-                        firstmoveR = true;
-                        firstmoveL = true;
                     }
                 }
 
@@ -297,7 +299,7 @@
                     alert('onError!');
                 }
 
-                var options = { frequency: 150 };  // Update often
+                var options = { frequency: 20 };  // Update often
 
                 acceleroWatch = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
             }
@@ -369,11 +371,6 @@
                 L.tileLayer('tiles/{z}/{x}/{y}.png', {attribution: 'Kaartdata: OSM'}).addTo(map);
 
                 window.map = map;
-                if(/iOS/i.test(window.device.platform)) {
-                    console.debug('Running on iOS');
-                    document.getElementById('slider').style.height = '90px';
-                }
-
             }
 
             // Start clock
@@ -510,16 +507,6 @@
             }
             // End clock
 
-            // if (window.innerHeight > 900) {
-            //     console.debug("big 'ol screen enlarging slider");
-            //     document.getElementById("slider").style.height = "250px";
-            //     document.getElementById("progress-bar").style.height = "10px";
-            //     document.getElementById("progress-bar").style.top = "240px";
-            // }
-            // else {
-            //     document.getElementById("slider").style.height = "150px";
-            //     document.getElementById("progress-bar").style.top = "145px";
-            // }
 
             function init_neerslagradar () {
                 init_map();
