@@ -36,9 +36,10 @@ function onDeviceReady () {
 
         //encodeURI()
         var uri = imageUrlBase + animationDatetimes[0]; //2013-11-04T14%3A00%3A00.000Z
-        var filePath = sPath + animationDatetimes[0] + '.png';
+        var filePath = sPath + animationDatetimes[0].replace(':', '_').replace(':', '_').replace('.', '_') + '.png';
         var count = 0;
         var errorCount = 0;
+        var errorMsg = true;
 
         var succes = function(entry) {
             count++;
@@ -55,7 +56,6 @@ function onDeviceReady () {
         var failure = function(error) {
             count++;
             errorCount++;
-            var errorMsg = true;
             if (errorCount / animationDatetimes.length > 0.8 && errorMsg) {
                 errorMsg = false;
                 alert("Er gaat iets mis bij het downloaden van de radarbeelden. Mogelijk is de server tijdelijk onbereikbaar.");
@@ -73,7 +73,7 @@ function onDeviceReady () {
         var lastOne = false;
         for (var i = animationDatetimes.length - 1; i >= 0; i--) {
             uri = imageUrlBase + animationDatetimes[i];
-            filePath = sPath + animationDatetimes[i] + '.png';
+            filePath = sPath + animationDatetimes[i].replace(':', '_').replace(':', '_').replace('.', '_') + '.png';
             fileTransfer.download(
             uri,
             filePath,
@@ -119,7 +119,7 @@ function onDeviceReady () {
         console.error("Removing directory failed");
         attempts++;
         getFileSystem();
-    }
+    };
 
     onFileError = function (msg) {
         console.error("No file: " + msg);
