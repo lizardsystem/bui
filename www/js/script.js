@@ -247,27 +247,37 @@
                 var firstmoveL = true;
                 function onSuccess(acceleration) {
                     var mv = acceleration.x;
-                    if (mv > 2 || mv < -2) {
+
+                    if (mv < -1.5 && current_layer_idx < radarImages.length) {
                         time_steps++;
-                        if (current_layer_idx < radarImages.length-1) {
-                            if (firstmoveR && mv < -1) {
-                                firstmoveR = false;
-                                firstmoveL = true;
-                                slideLayerBackwards();
-                                time_steps++;
-                            }
-                            else if (mv < -4 && time_steps > 0) {
-                                cycle_layers();
-                                time_steps = 0;
-                            }
-                            else if (mv < -2.5 && time_steps > 2) {
-                                cycle_layers();
-                                time_steps = 0;
-                            }
-                            else if (mv < -1.5 && time_steps > 3) {
-                                cycle_layers();
-                                time_steps = 0;
-                            }
+                        if (firstmoveR) {
+                            firstmoveR = false;
+                            firstmoveL = true;
+                            cycle_layers();
+                        }
+                        else if (time_steps > 2) {
+                            cycle_layers();
+                            time_steps = 0;
+                        }
+                        else if (mv < -2 && time_steps > 1) {
+                            cycle_layers();
+                            time_steps = 0;
+                        }
+                        else if (mv < -3) {
+                            cycle_layers();
+                            time_steps = 0;
+                        }
+                    }
+                    else if (mv > 1.5 && current_layer_idx > 0) {
+                        time_steps++;
+                        if (firstmoveL) {
+                            firstmoveL = false;
+                            firstmoveR = true;
+                            slideLayerBackwards();
+                        }
+                        else if (time_steps > 2) {
+                            slideLayerBackwards();
+                            time_steps = 0;
                         }
                         if (current_layer_idx >= 0) {
                             if (firstmoveL && mv > 1) {
@@ -289,7 +299,8 @@
                                 time_steps = 0;
                             }
                         }
-                        else {
+                        else if (mv > 3) {
+                            slideLayerBackwards();
                             time_steps = 0;
                         }
                     }
