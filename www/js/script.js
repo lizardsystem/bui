@@ -93,26 +93,6 @@
 
         function roll(radarImages) {
 
-            function getPPI(){
-                // create an empty element
-                var div = document.createElement("div");
-                // give it an absolute size of one inch
-                div.style.width="1in";
-                // append it to the body
-                var body = document.getElementsByTagName("body")[0];
-                body.appendChild(div);
-                // read the computed width
-                var ppi = document.defaultView.getComputedStyle(div, null).getPropertyValue('width');
-                // remove it again
-                body.removeChild(div);
-                // and return the value
-                return parseFloat(ppi);
-            }
-
-            
-
-            console.debug("Retina: " + getPPI());
-
             var slider = document.getElementById('slider');
             document.getElementById('progress-bar').style.height = 0.03 * slider.offsetHeight + 'px';
 
@@ -247,22 +227,27 @@
                 var firstmoveL = true;
                 function onSuccess(acceleration) {
                     var mv = acceleration.x;
-                    if (mv < -1.5 && current_layer_idx < radarImages.length) {
+                    if (mv < -1.5 && current_layer_idx < radarImages.length - 1) {
                         time_steps++;
                         if (firstmoveR) {
+                            console.debug("First move right");
                             firstmoveR = false;
                             firstmoveL = true;
                             cycle_layers();
+                            time_steps = 0;
                         }
                         else if (time_steps > 2) {
+                            console.debug("Slow move right");
                             cycle_layers();
                             time_steps = 0;
                         }
                         else if (mv < -2 && time_steps > 1) {
+                            console.debug("Move right");
                             cycle_layers();
                             time_steps = 0;
                         }
                         else if (mv < -3) {
+                            console.debug("Fast move right");
                             cycle_layers();
                             time_steps = 0;
                         }
@@ -270,24 +255,30 @@
                     else if (mv > 1.5 && current_layer_idx > 0) {
                         time_steps++;
                         if (firstmoveL) {
+                            console.debug("First move left");
                             firstmoveL = false;
                             firstmoveR = true;
                             slideLayerBackwards();
+                            time_steps = 0;
                         }
                         else if (time_steps > 2) {
+                            console.debug("Slow move left");
                             slideLayerBackwards();
                             time_steps = 0;
                         }
                         else if (mv > 2 && time_steps > 1) {
+                            console.debug("Move left");
                             slideLayerBackwards();
                             time_steps = 0;
                         }
                         else if (mv > 3) {
+                            console.debug("Fast move left");
                             slideLayerBackwards();
                             time_steps = 0;
                         }
                     }
                     else {
+                        console.debug("No Move");
                         time_steps = 0;
                         firstmoveR = true;
                         firstmoveL = true;
@@ -298,7 +289,7 @@
                     alert('onError!');
                 }
 
-                var options = { frequency: 20 };  // Update often
+                var options = { frequency: 150 };  // Update often
 
                 acceleroWatch = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
             }
