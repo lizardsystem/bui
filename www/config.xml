@@ -8,7 +8,7 @@
         Nelen en Schuurmans, Reuring en Bombarie
     </author>
     <content src="index.html" />
-    <access origin="*" />
+    <access origin="http://regenradar.lizard.net/*" />
     <preference name="fullscreen" value="false" />
     <preference name="webviewbounce" value="true" />
     <preference name="exit-on-suspend" value="true" />

@@ -35,7 +35,7 @@ function onDeviceReady () {
         var fileTransfer = new FileTransfer();
 
         //encodeURI()
-        var uri = imageUrlBase + animationDatetimes[0]; //2013-11-04T14%3A00%3A00.000Z
+        var uri = encodeURI(imageUrlBase + animationDatetimes[0]); //2013-11-04T14%3A00%3A00.000Z
         var filePath = sPath + animationDatetimes[0].replace(':', '_').replace(':', '_').replace('.', '_') + '.png';
         var count = 0;
         var errorCount = 0;

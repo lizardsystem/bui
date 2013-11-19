@@ -212,14 +212,6 @@
                     }
                 });
             }
-            
-            //debug puposes
-            if (window.DeviceOrientationEvent) {
-                //console.debug("DeviceOrientation is supported");
-            }
-            else {
-                console.debug("DeviceOrientation is not supported");
-            }
 
             function orientationControl () {
                 var time_steps = 0;
