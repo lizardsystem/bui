@@ -2,6 +2,10 @@
             navigator.app.exitApp();
         }
 
+        function onHomeClickEvent () {
+            stop ();
+        }
+
         function init () {
             if (window.cordova) {
                 console.debug("Running as cordova application.\nWMS is loaded from the filesystem.\n");
@@ -282,6 +286,13 @@
                 navigator.accelerometer.clearWatch(acceleroWatch);
             }
 
+            function onPauseEvent () {
+                if (is_running) {
+                    stop ();
+                }
+                navigator.accelerometer.clearWatch(acceleroWatch);
+            }
+
             function stop () {
                 clearInterval(cycle_layers_interval);
                 orientationControl ();
@@ -332,7 +343,14 @@
 
                 oldLayer.addTo(map);
                 current_layer_idx = 0;
-
+                
+                console.debug(device.platform + ' version ' + device.version.slice(0,1));
+                var devVer = device.platform == 'Android' ? device.version.slice(0,1): undefined;
+                if (devVer == '3' || devVer == '2') {
+                    map.attributionControl.removeFrom(map);
+                    console.debug(devVer);
+                }
+                
                 map.on('movestart', onMove);
 
                 function onMove () {
@@ -474,10 +492,10 @@
                 var left = current_layer_idx/(radarImages.length-1) * (max_width - bar.offsetWidth);
                 bar.style.left = left.toString() + "px";
                 if (left === 0) {
-                    bar.style.borderRadius = "0 5px 0 0";
+                    bar.style.borderRadius = "5px 0 0 0";
                 }
                 else if (left === max_width - bar.offsetWidth) {
-                    bar.style.borderRadius = "5px 0 0 0";
+                    bar.style.borderRadius = "0 5px 0 0";
                 }
                 else {
                     bar.style.borderRadius = "0";
@@ -491,6 +509,7 @@
                 init_slider();
                 initClock(initialImageUrl.slice(-28, -9));
                 start();
+                document.addEventListener("pause", onPauseEvent, false);
                 }
 
             init_neerslagradar();
