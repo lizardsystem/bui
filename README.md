@@ -44,14 +44,7 @@ Building for android:
  $ cordova plugin add org.apache.cordova.device
  ```
 
- - Add the following platform-specific configuration (in platforms/android/res/xml/config.xml):
- ```
-<feature name="Device">
-    <param name="android-package" value="org.apache.cordova.device.Device" />
-</feature>
- ```
-
- - Add icons and splashscreens to platforms/android/res/<icons-folders>/<splash|icon>.png
+ - Add icons and splashscreens to platforms/android/res/icons-folders/splash|icon.png
 
  - Add to platforms/android/res/xml/config.xml:
  ```
@@ -78,7 +71,7 @@ Building for android:
  - Add to platforms/android/AndroidManifest.xml:
  ```
  <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
- <manifest... android:screenOrientation="portrait" ...>
+ <activity... android:screenOrientation="portrait" ...>
  ```
 
 
