@@ -77,6 +77,11 @@ Building for android:
  - To release:
  ```
  $ cordova build --release android
+ $ cd platforms/android/bin
+ $ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ~/Development/bui.keystore Bui-release-unsigned.apk bui
+ $ zipalign -v 4 Bui-release-unsigned.apk Bui.apk
+
+
  ```
 You will find your unsigned release apk in platforms/android/bin/
 
