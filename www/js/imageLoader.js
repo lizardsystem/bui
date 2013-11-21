@@ -7,7 +7,7 @@ function buildAnimationDatetimes () {
     // The wms only accepts requests for every 5th minute exact
     now.minutes((Math.round(now.minutes()/5) * 5) % 60);
     now.seconds(0);
-    console.debug("Now rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
+    //console.debug("Now rounded = ", now.format('YYYY-MM-DDTHH:mm:ss'));
 
     for (var interval = 5; interval < hours; interval = interval + 5) {
         var animationDatetime =  now.subtract('minutes', 5);
@@ -49,7 +49,7 @@ function onDeviceReady () {
             //console.log("download complete: " + entry.toURL());
             if (lastOne) {
                 window.location='./main.html';
-                console.log("Start the show! \n" +  radarImages);
+                //console.log("Start the show! \n" +  radarImages);
             }
         };
 
@@ -61,12 +61,12 @@ function onDeviceReady () {
                 alert("Er gaat iets mis bij het downloaden van de radarbeelden. Mogelijk is de server tijdelijk onbereikbaar.");
             }
             lastOne = count === animationDatetimes.length ? true: false;
-            console.debug("download error source " + error.source);
-            console.debug("download error target " + error.target);
-            console.debug("upload error code" + error.code);
+            //console.debug("download error source " + error.source);
+            //console.debug("download error target " + error.target);
+            //console.debug("upload error code" + error.code);
             if (lastOne) {
                 window.location='./main.html';
-                console.debug("Start the show! \n" +  radarImages);
+                //console.debug("Start the show! \n" +  radarImages);
             }
         };
 
@@ -104,25 +104,25 @@ function onDeviceReady () {
     };
 
     onFileSystemError = function (msg) {
-        console.error("No filesystem: " + msg);
+        //console.error("No filesystem: " + msg);
         attempts++;
         getFileSystem();
     };
 
     onDirectoryError = function (msg) {
-        console.error("Failed creating a directory");
+        //console.error("Failed creating a directory");
         attempts++;
         getFileSystem();
     };
 
     onDirectoryRemoveError = function (msg) {
-        console.error("Removing directory failed");
+        //console.error("Removing directory failed");
         attempts++;
         getFileSystem();
     };
 
     onFileError = function (msg) {
-        console.error("No file: " + msg);
+        //console.error("No file: " + msg);
         attempts++;
         getFileSystem();
     };
@@ -134,7 +134,7 @@ function onDeviceReady () {
             window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem, onFileSystemError);
         }
         else {
-            console.error("Tried 10 times, filesystem will not bend! All troops: retreat!");
+            //console.error("Tried 10 times, filesystem will not bend! All troops: retreat!");
             alert("Er gaat iets mis met het downloaden van de radarbeelden");
             navigator.app.exitApp();
         }
@@ -144,19 +144,19 @@ function onDeviceReady () {
 
     var nw = navigator.connection.type;
     if (nw === Connection.NONE) {
-        console.debug("No internet, skipping download");
+        //console.debug("No internet, skipping download");
         alert("U bent niet verbonden met internet. het is daarom niet mogelijk (de nieuwste) radarbeelden te tonen");
         window.location='./main.html';
-        console.log("Start the show! \n" +  radarImages);
+        //console.log("Start the show! \n" +  radarImages);
     }
     else if (nw === Connection.CELL_2G) {
-        console.debug("Slow internet, downloading only a few");
+        //console.debug("Slow internet, downloading only a few");
         animationDatetimes = animationDatetimes.slice(0, 10);
         attempts++;
         getFileSystem();
     }
     else if (nw === Connection.CELL_3G) {
-        console.debug("Medium slow internet, downloading only half");
+        //console.debug("Medium slow internet, downloading only half");
         animationDatetimes = animationDatetimes.slice(0, 20);
         attempts++;
         getFileSystem();

@@ -2,14 +2,18 @@
             navigator.app.exitApp();
         }
 
+        function onHomeClickEvent () {
+            stop ();
+        }
+
         function init () {
             if (window.cordova) {
-                console.debug("Running as cordova application.\nWMS is loaded from the filesystem.\n");
+                //console.debug("Running as cordova application.\nWMS is loaded from the filesystem.\n");
                 document.addEventListener("deviceready", whichImagesAreWeTalking, true);
                 document.addEventListener("backbutton", onBackClickEvent, false);
             }
             else {
-                console.debug("Running as web application.\nWMS is loaded from original wms source on the fly.\nCordova plugins behave unexpectedly, for debugging purposes only!\n");
+                //console.debug("Running as web application.\nWMS is loaded from original wms source on the fly.\nCordova plugins behave unexpectedly, for debugging purposes only!\n");
                 document.addEventListener("DOMContentLoaded", buildRadarURLs());
             }
         }
@@ -40,7 +44,7 @@
             var attempts = 0;
 
             function success(entries) {
-                console.debug("This is how many entries we have: " + entries.length);
+                //console.debug("This is how many entries we have: " + entries.length);
                 for (var i=0; i < entries.length; i++) {
                     radarImages.push(entries[i].toURL());
                 }
@@ -66,13 +70,13 @@
             };
 
             onFileSystemError = function (msg) {
-                console.error("No filesystem: ", msg);
+                //console.error("No filesystem: ", msg);
                 attempts++;
                 getFileSystem();
             };
 
             dirError = function (msg) {
-                console.error("Failed getting the directory");
+                //console.error("Failed getting the directory");
                 attempts++;
                 getFileSystem();
             };
@@ -97,7 +101,7 @@
             document.getElementById('progress-bar').style.height = 0.03 * slider.offsetHeight + 'px';
 
             var retina = slider.offsetHeight < 100;
-            console.debug("retina: " + retina);
+            //console.debug("retina: " + retina);
             
             var map = null;
             var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
@@ -142,7 +146,7 @@
             // onError Callback receives a PositionError object
             //
             function onError(error) {
-                console.error("Geolocating went wrong");
+                //console.error("Geolocating went wrong");
                 //alert('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
                 return true; // fail silently...
             }
@@ -189,10 +193,10 @@
                 });
 
                 hammertime.on("hold", function (ev) {
-                    console.debug("Holding on");
+                    //console.debug("Holding on");
                     if (has_hold) {
                         if (window.innerHeight > 900) {
-                            console.debug("big 'ol screen zooming in");
+                            //console.debug("big 'ol screen zooming in");
                             map.setView([51.7, 5.3], 8, {animate: false});
                         }
                         else {
@@ -201,9 +205,9 @@
                         has_hold = false;
                     }
                     else if (!has_hold) {
-                        console.debug("Geolocating");
+                        //console.debug("Geolocating");
                         navigator.geolocation.getCurrentPosition(function (position) {
-                            console.debug("position: " + position);
+                            //console.debug("position: " + position);
                             map.setView([position.coords.latitude, position.coords.longitude], 11, {
                             animate: true
                             });
@@ -282,6 +286,13 @@
                 navigator.accelerometer.clearWatch(acceleroWatch);
             }
 
+            function onPauseEvent () {
+                if (is_running) {
+                    stop ();
+                }
+                navigator.accelerometer.clearWatch(acceleroWatch);
+            }
+
             function stop () {
                 clearInterval(cycle_layers_interval);
                 orientationControl ();
@@ -323,7 +334,7 @@
                 }
 
                 if (window.innerHeight > 900) {
-                    console.debug("big 'ol screen zooming in");
+                    //console.debug("big 'ol screen zooming in");
                     map.setView([51.7, 5.3], 8, {animate: false});
                 }
                 else {
@@ -332,7 +343,14 @@
 
                 oldLayer.addTo(map);
                 current_layer_idx = 0;
-
+                
+                //console.debug(device.platform + ' version ' + device.version.slice(0,1));
+                var devVer = device.platform == 'Android' ? device.version.slice(0,1): undefined;
+                if (devVer == '3' || devVer == '2') {
+                    map.attributionControl.removeFrom(map);
+                    //console.debug(devVer);
+                }
+                
                 map.on('movestart', onMove);
 
                 function onMove () {
@@ -474,10 +492,10 @@
                 var left = current_layer_idx/(radarImages.length-1) * (max_width - bar.offsetWidth);
                 bar.style.left = left.toString() + "px";
                 if (left === 0) {
-                    bar.style.borderRadius = "0 5px 0 0";
+                    bar.style.borderRadius = "5px 0 0 0";
                 }
                 else if (left === max_width - bar.offsetWidth) {
-                    bar.style.borderRadius = "5px 0 0 0";
+                    bar.style.borderRadius = "0 5px 0 0";
                 }
                 else {
                     bar.style.borderRadius = "0";
@@ -491,6 +509,7 @@
                 init_slider();
                 initClock(initialImageUrl.slice(-28, -9));
                 start();
+                document.addEventListener("pause", onPauseEvent, false);
                 }
 
             init_neerslagradar();

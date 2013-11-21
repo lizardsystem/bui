@@ -74,6 +74,11 @@ Building for android:
  <activity... android:screenOrientation="portrait" ...>
  ```
 
+ - To release:
+ ```
+ $ cordova build --release android
+ ```
+You will find your unsigned release apk in platforms/android/bin/
 
 Building for iOS
 ----------------
