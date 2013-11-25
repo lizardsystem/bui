@@ -58,7 +58,8 @@ function onDeviceReady () {
             errorCount++;
             if (errorCount / animationDatetimes.length > 0.8 && errorMsg) {
                 errorMsg = false;
-                alert("Er gaat iets mis bij het downloaden van de radarbeelden. Mogelijk is de server tijdelijk onbereikbaar.");
+                navigator.notification.alert("Er gaat iets mis bij het downloaden van de radarbeelden. Mogelijk is de server tijdelijk onbereikbaar.",
+                    function () { }, "Download fout");
             }
             lastOne = count === animationDatetimes.length ? true: false;
             //console.debug("download error source " + error.source);
@@ -135,8 +136,10 @@ function onDeviceReady () {
         }
         else {
             //console.error("Tried 10 times, filesystem will not bend! All troops: retreat!");
-            alert("Er gaat iets mis met het downloaden van de radarbeelden");
-            navigator.app.exitApp();
+            navigator.notification.alert("Er gaat iets mis met het downloaden van de radarbeelden, bui gaat sluiten",
+                function () {
+                    navigator.app.exitApp();
+                }, "Download fout");
         }
     };
     
@@ -145,8 +148,8 @@ function onDeviceReady () {
     var nw = navigator.connection.type;
     if (nw === Connection.NONE) {
         //console.debug("No internet, skipping download");
-        alert("U bent niet verbonden met internet. het is daarom niet mogelijk (de nieuwste) radarbeelden te tonen");
-        window.location='./main.html';
+        navigator.notification.alert("U bent niet verbonden met internet. het is daarom niet mogelijk (de nieuwste) radarbeelden te tonen",
+            function () { window.location='./main.html'; }, "Slechte verbinding");
         //console.log("Start the show! \n" +  radarImages);
     }
     else if (nw === Connection.CELL_2G) {
