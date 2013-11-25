@@ -177,11 +177,23 @@
                     ev.stopPropagation();
 
                 });
-
+                var stopped = false;
                 hammertime.on("dragstart", function(ev) {
                     ev.gesture.preventDefault();
                     previous_drag = 0;
+                    if (is_running()){
+                        onPauseEvent();
+                        stopped = true;
+                    }
                     ev.stopPropagation();
+                });
+
+                hammertime.on("dragend", function(ev) {
+                    if (stopped) {
+                        start();
+                        orientationControl();
+                        stopped = false;
+                    }
                 });
 
                 hammertime.on("tap", function(ev) {
