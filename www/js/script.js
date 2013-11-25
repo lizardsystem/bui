@@ -185,15 +185,21 @@
                         onPauseEvent();
                         stopped = true;
                     }
+                    else {
+                        navigator.accelerometer.clearWatch(acceleroWatch);
+                    }
                     ev.stopPropagation();
                 });
 
                 hammertime.on("dragend", function(ev) {
                     if (stopped) {
                         start();
-                        orientationControl();
                         stopped = false;
                     }
+                    else {
+                        orientationControl();
+                    }
+                    ev.stopPropagation();
                 });
 
                 hammertime.on("tap", function(ev) {
@@ -307,7 +313,7 @@
 
             function stop () {
                 clearInterval(cycle_layers_interval);
-                orientationControl ();
+                orientationControl();
                 cycle_layers_interval = null;
             }
 
