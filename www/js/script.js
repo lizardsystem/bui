@@ -8,12 +8,14 @@
 
         function getHelp() {
             var helpDiv = document.getElementById('help');
-            helpDiv.style.display = 'block';
+            helpDiv.style.zIndex = 999999;
+            helpDiv.style.backgroundColor = 'rgba(0,0,0,0.9)';
             return true;
         }
         function closeHelp() {
             var helpDiv = document.getElementById('help');
-            helpDiv.style.display = 'none';
+            helpDiv.style.backgroundColor = 'rgba(0,0,0,0)';
+            helpDiv.style.zIndex = -100;
             return true;
         }
 

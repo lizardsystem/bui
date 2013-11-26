@@ -3,16 +3,17 @@
     #map { width: 100%; height:100%; background-color: #44C1E9;}
 }
 
-#help{
-  display: none;
+#help {
   width: 100%;
   height: 100%;
   position: absolute;
-  top: 0px;
-  left: 0px;
-  background-color: rgba(0,0,0,0.9);
-  z-index: 500000
+  top: 0;
+  left: 0;
+  -webkit-transition: 0.4s;
+  background-color: rgba(0,0,0,0);
+  z-index: -100;
 }
+
 #help1 {
   position: relative;
   top: 50px;
@@ -42,8 +43,10 @@ line-height: 1;
 }
 
 .fa-question-circle {
+    -webkit-touch-callout: none;
     -webkit-user-select:none;
-    color: #C0392B;
+    user-select: none;
+    color: darkred;
     right: 0;
     z-index: 10;
     position: absolute;
@@ -54,7 +57,7 @@ line-height: 1;
 }
 
 .fa-question-circle:active {
-  color: #D8392B;
+  color: #C0392B;
 }
 
 .leaflet-top {
