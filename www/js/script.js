@@ -9,7 +9,7 @@
         function getHelp() {
             var helpDiv = document.getElementById('help');
             helpDiv.style.zIndex = 999999;
-            helpDiv.style.backgroundColor = 'rgba(0,0,0,0.9)';
+            helpDiv.style.backgroundColor = 'rgba(0,0,0,0.7)';
             return true;
         }
         function closeHelp() {
