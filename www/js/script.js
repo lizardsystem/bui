@@ -119,7 +119,7 @@
             var question = document.getElementById('question');
             var retina = slider.offsetHeight < 100;
             if (!retina) {
-                question.style.transform = 'scale(1.2);'
+                question.style.webkitTransform = "scale(1.2)";
             }
             
             var map = null;
