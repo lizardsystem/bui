@@ -3,6 +3,18 @@
     #map { width: 100%; height:100%; background-color: #44C1E9;}
 }
 
+#help{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 1px solid red;
+  display: none;
+  color: #ccc;
+  opacity: .7;
+}
+
 @font-face {
   font-family: 'FontAwesome';
   src: url('fontawesome-webfont.eot?v=4.0.3');

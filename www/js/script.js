@@ -6,6 +6,12 @@
             stop ();
         }
 
+        function getHelp() {
+            var helpDiv = document.getElementById('help');
+            helpDiv.style.display = 'block';
+            return true;
+        }
+
         function init () {
             if (window.cordova) {
                 //console.debug("Running as cordova application.\nWMS is loaded from the filesystem.\n");
