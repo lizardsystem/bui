@@ -108,9 +108,12 @@
 
         function roll(radarImages) {
 
+            // Actual size on displays differs per device, 
+            // therefore it is related to the height of the slider which is 20% of the screen
             var slider = document.getElementById('slider');
             document.getElementById('progress-bar').style.height = 0.03 * slider.offsetHeight + 'px';
-
+            var question = document.getElementById('question');
+            question.style.fontSize = slider.offsetHeight / 5 + 'px';
             var retina = slider.offsetHeight < 100;
             //console.debug("retina: " + retina);
             
@@ -349,18 +352,9 @@
                        [57, 10],
                        [47, 0]
                        ],
-                    attributionControl: true,
+                    attributionControl: false,
                     zoomControl: false
                 });
-
-                map.attributionControl.setPrefix('App van Nelen &amp; Schuurmans');
-                map.attributionControl.addAttribution('Nationale Regenradar');
-                map.attributionControl.setPosition('topright');
-
-                if (retina) {
-                    document.getElementsByClassName('leaflet-top')[1].style.webkitTransform = 'scale(0.6) rotate(90deg)';
-                    document.getElementsByClassName('leaflet-top')[1].style.height = '20px';
-                }
 
                 if (window.innerHeight > 900) {
                     //console.debug("big 'ol screen zooming in");
@@ -372,13 +366,6 @@
 
                 oldLayer.addTo(map);
                 current_layer_idx = 0;
-                
-                //console.debug(device.platform + ' version ' + device.version.slice(0,1));
-                var devVer = device.platform == 'Android' ? device.version.slice(0,1): undefined;
-                if (devVer == '3' || devVer == '2') {
-                    map.attributionControl.removeFrom(map);
-                    //console.debug(devVer);
-                }
                 
                 map.on('movestart', onMove);
 
@@ -393,7 +380,7 @@
                     start();
                 }
 
-                L.tileLayer('tiles/{z}/{x}/{y}.png', {attribution: 'Kaartdata: OSM'}).addTo(map);
+                L.tileLayer('tiles/{z}/{x}/{y}.png').addTo(map);
 
                 window.map = map;
             }

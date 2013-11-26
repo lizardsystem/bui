@@ -42,13 +42,15 @@ line-height: 1;
 }
 
 .fa-question-circle {
+    -webkit-user-select:none;
     color: #C0392B;
-    right: 2.5%;
+    right: 0;
     z-index: 10;
-    font-size: 23px;
     position: absolute;
-    top: 4.5%;
+    top: 0;
+    margin: 0.4cm;
     z-index: 10;
+    -webkit-transition-duration: 0.2s;
 }
 
 .fa-question-circle:active {
