@@ -523,6 +523,7 @@
 
 
             function init_neerslagradar () {
+                document.getElementById('gesture-animation').style.width = '50%';
                 init_map();
                 init_slider();
                 initClock(initialImageUrl.slice(-28, -9));
