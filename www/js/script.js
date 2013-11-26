@@ -117,9 +117,10 @@
             var slider = document.getElementById('slider');
             document.getElementById('progress-bar').style.height = 0.03 * slider.offsetHeight + 'px';
             var question = document.getElementById('question');
-            question.style.fontSize = slider.offsetHeight / 5 + 'px';
             var retina = slider.offsetHeight < 100;
-            //console.debug("retina: " + retina);
+            if (!retina) {
+                question.style.transform = 'scale(1.2);'
+            }
             
             var map = null;
             var imageBounds = [[54.28458617998074, 1.324296158471368], [49.82567047026146, 8.992548357936204]];
