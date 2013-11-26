@@ -10,9 +10,10 @@
   top: 0;
   left: 0;
   border: 1px solid red;
-  display: none;
+  opacity: 0;
   color: #ccc;
   opacity: .7;
+  -webkit-transition: 0.2s;
 }
 
 @font-face {
@@ -38,8 +39,10 @@ line-height: 1;
 }
 
 .fa-question-circle {
+    -webkit-touch-callout: none;
     -webkit-user-select:none;
-    color: #C0392B;
+    user-select: none;
+    color: darkred;
     right: 0;
     z-index: 10;
     position: absolute;
@@ -50,7 +53,7 @@ line-height: 1;
 }
 
 .fa-question-circle:active {
-  color: #D8392B;
+  color: #C0392B;
 }
 
 .leaflet-top {
