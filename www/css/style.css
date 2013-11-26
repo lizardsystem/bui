@@ -16,49 +16,22 @@
 
 #help1 {
   position: relative;
-  top: 50px;
+  top: 35%;
   right: -25%;
 }
 
-@font-face {
-  font-family: 'FontAwesome';
-  src: url('fontawesome-webfont.eot?v=4.0.3');
-  src: url('fontawesome-webfont.ttf?v=4.0.3');
-  font-weight: normal;
-  font-style: normal;
-}
-
-.fa {
-display: inline-block;
-font-family: FontAwesome;
-font-style: normal;
-font-weight: normal;
-line-height: 1;
--webkit-font-smoothing: antialiased;
--moz-osx-font-smoothing: grayscale;
-}
-
-.fa::before {
-  content: "\f059";
-}
-
 .fa-question-circle {
+    -webkit-transform: scale(0.8);
     -webkit-touch-callout: none;
-    -webkit-user-select:none;
-    user-select: none;
-    color: darkred;
+    -webkit-user-select: none;
     right: 0;
     z-index: 10;
     position: absolute;
     top: 0;
     margin: 0.4cm;
-    z-index: 10;
     -webkit-transition-duration: 0.2s;
 }
 
-.fa-question-circle:active {
-  color: #C0392B;
-}
 
 .leaflet-top {
   -webkit-transform: scale(1.2) rotate(90deg);
