@@ -6,6 +6,7 @@
 @font-face {
   font-family: 'FontAwesome';
   src: url('fontawesome-webfont.eot?v=4.0.3');
+  src: url('fontawesome-webfont.ttf?v=4.0.3');
   font-weight: normal;
   font-style: normal;
 }
