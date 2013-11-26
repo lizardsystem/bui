@@ -177,10 +177,28 @@
                     ev.stopPropagation();
 
                 });
-
+                var stopped = false;
                 hammertime.on("dragstart", function(ev) {
                     ev.gesture.preventDefault();
                     previous_drag = 0;
+                    if (is_running()){
+                        onPauseEvent();
+                        stopped = true;
+                    }
+                    else {
+                        navigator.accelerometer.clearWatch(acceleroWatch);
+                    }
+                    ev.stopPropagation();
+                });
+
+                hammertime.on("dragend", function(ev) {
+                    if (stopped) {
+                        start();
+                        stopped = false;
+                    }
+                    else {
+                        orientationControl();
+                    }
                     ev.stopPropagation();
                 });
 
@@ -295,7 +313,7 @@
 
             function stop () {
                 clearInterval(cycle_layers_interval);
-                orientationControl ();
+                orientationControl();
                 cycle_layers_interval = null;
             }
 
