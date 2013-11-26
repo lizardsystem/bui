@@ -15,9 +15,9 @@
 }
 
 #help1 {
-  position: absolute;
-  bottom: 40%;
-  right: 40%;
+  position: relative;
+  top: 50px;
+  right: -25%;
 }
 
 @font-face {
