@@ -11,6 +11,11 @@
             helpDiv.style.display = 'block';
             return true;
         }
+        function closeHelp() {
+            var helpDiv = document.getElementById('help');
+            helpDiv.style.display = 'none';
+            return true;
+        }
 
         function init () {
             if (window.cordova) {

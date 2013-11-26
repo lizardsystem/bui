@@ -4,15 +4,19 @@
 }
 
 #help{
+  display: none;
   width: 100%;
   height: 100%;
   position: absolute;
-  top: 0;
-  left: 0;
-  border: 1px solid red;
-  display: none;
-  color: #ccc;
-  opacity: .7;
+  top: 0px;
+  left: 0px;
+  background-color: rgba(0,0,0,0.9);
+  z-index: 500000
+}
+#help1 {
+  position: absolute;
+  bottom: 40%;
+  right: 40%;
 }
 
 @font-face {
