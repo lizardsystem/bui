@@ -27,11 +27,11 @@ line-height: 1;
 
 .fa-question-circle {
     color: #C0392B;
-    right: 2.5%;
+    right: 0;
     z-index: 10;
-    font-size: 23px;
     position: absolute;
-    top: 4.5%;
+    top: 0;
+    margin: 0.2cm;
     z-index: 10;
 }
 
