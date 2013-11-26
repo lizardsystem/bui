@@ -6,18 +6,24 @@
             stop ();
         }
 
+        var questionMarkIcon = document.getElementById('question');
+        questionMarkIcon.addEventListener('touchstart', getHelp, false);
+
         function getHelp() {
             var helpDiv = document.getElementById('help');
             helpDiv.style.zIndex = 999999;
             helpDiv.style.backgroundColor = 'rgba(0,0,0,0.7)';
             document.getElementById('question-icon').style.visibility = 'hidden';
+            helpDiv.addEventListener('touchstart', closeHelp, false);
             return true;
         }
+
         function closeHelp() {
             var helpDiv = document.getElementById('help');
             helpDiv.style.backgroundColor = 'rgba(0,0,0,0)';
             helpDiv.style.zIndex = -100;
             document.getElementById('question-icon').style.visibility = 'visible';
+            helpDiv.removeEventListener('touchstart', closeHelp, false);
             return true;
         }
 

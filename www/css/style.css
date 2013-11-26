@@ -24,8 +24,7 @@
     -webkit-transform: scale(0.8);
     -webkit-touch-callout: none;
     -webkit-user-select: none;
-    touch-callout: none;
-    user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     right: 0.5cm;
     top: 0.5cm;
     z-index: 10;
